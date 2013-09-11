@@ -35,13 +35,13 @@ sort_by_new = False
 # 2 / Wednesday / There are no stupid questions thread
 # 3 / Thursday / Marketplace thread
 if day == 0:
-    title =  config.get("monday", "title") + ' (' + d.strftime("%B %d") + ')'
+    title = config.get("monday", "title") + ' (' + d.strftime("%B %d") + ')'
     text = config.get("monday", "text")
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
       'title':  title, 'text': text }
     sort_by_new = True
 elif day == 1:
-        title =  config.get("tuesday", "title") + ' (' + d.strftime("%B %d") + ')'
+    title =  config.get("tuesday", "title") + ' (' + d.strftime("%B %d") + ')'
     text = config.get("tuesday", "text")
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
       'title':  title, 'text': text }
