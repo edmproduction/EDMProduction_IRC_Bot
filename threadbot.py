@@ -47,7 +47,7 @@ if day == 0:
         'effort!\nSomething like:\n\n> [feedback for bob] \n\n> [feedback for bill] \n\n> [feedback' + \
         ' for joe] \n\n> Here\'s my track [link]. I\'m looking for ___'
      }
-     sort_by_new = True
+    sort_by_new = True
 elif day == 1:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
      'title': '"How do I make this sound?" Thread (' + d.strftime("%B %d") + ')', \
@@ -55,7 +55,7 @@ elif day == 1:
       " in this thread until the next one is created. Any threads made that " + \
       " should be a comment here will" + \
       " be removed.\nPlease include a timestamped link to your request." }
-      sort_by_new = True
+    sort_by_new = True
 elif day == 2:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
      'title': '"No Stupid Questions" Thread (' + d.strftime("%B %d") + ")", \
@@ -63,7 +63,7 @@ elif day == 2:
       "definitely [RTFM](http://en.wikipedia.org/wiki/RTFM) when you have a question, some days " + \
       "you just [can't get rid of a bomb](http://cdn.uproxx.com/wp-content/uploads/2011/08/tumblr_lpnoa80qJS1qj4b9to2_r1_500.gif)." + \
       " Ask your ~~stupid~~ questions here." }
-      sort_by_new = True
+    sort_by_new = True
 elif day == 3:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
      'title': 'edmp Marketplace Thread (' + d.strftime("%B %d") + ")", \
