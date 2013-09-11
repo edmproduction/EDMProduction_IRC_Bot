@@ -31,23 +31,19 @@ except ConfigParser.NoOptionError, e:
     day = d.weekday()
 sort_by_new = False
 
-print day
 # 0 / Monday / Feedback thread
 # 1 / Tuesday / How do I make this sound thread
 # 2 / Wednesday / There are no stupid questions thread
 # 3 / Thursday / Marketplace thread
 if day == 0:
-    thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
-     'title': 'Feedback Thread (' + d.strftime("%B %d") + ')', \
-     'text': 'Please post any and all [Feedback] or [Listen] type threads in this thread '+ \
-        'until the next one is created. Any threads made that should be a comment here will ' + \
-        'be removed. Please ask for specific advice.\n\n\nFurthermore, please link to the feedback ' +\
-        'comments you\'ve left in your top-level comment. This will show others the feedback you\'ve ' + \
-        'left, and you\'re more likely to get feedback yourself! Also, please notice those who are ' + \
-        'leaving a lot of feedback and give them some, too. This is a cooperative ' + \
-        'effort!\nSomething like:\n\n> [feedback for bob] \n\n> [feedback for bill] \n\n> [feedback' + \
-        ' for joe] \n\n> Here\'s my track [link]. I\'m looking for ___'
-     }
+    title =  config.get("monday", "title") + ' (' + d.strftime("%B %d") + ')'
+    text = config.get("monday", "text")
+    thread_call = {'api_type': 'json',
+     'kind': 'self',
+      'sr':sr, 'uh': mh,
+      'title':  title,
+       'text': text 
+    }
     sort_by_new = True
 elif day == 1:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
@@ -102,6 +98,8 @@ if len(thread_r['errors']) > 0:
     r = s.post('http://www.reddit.com/api/submit', data=thread_call, cookies = cookie)
     thread_r = r.json()['json']['data']
     print r.json()
+    if len(thread_r['errors']) > 0:
+        p.pprint(thread_r)
 
 thread_r = thread_r['data']
 name = thread_r['name']
@@ -122,7 +120,7 @@ if len(thread_r['errors']) > 0:
 #### Edit to include "sort by new" link
 if sort_by_new:
     url = url + '?sort=new'
-    body_text = "*[Please sort this thread by new!]("+url+")\n\n*" + thread_call['text']
+    body_text = "* [Please sort this thread by new!]("+url+")\n\n*" + thread_call['text']
     edit_data = {'api_type': 'json', 'text': body_text, 'thing_id':name, 'uh': mh}
     r = s.post('http://www.reddit.com/api/editusertext', data=edit_data, cookies = cookie)
 
