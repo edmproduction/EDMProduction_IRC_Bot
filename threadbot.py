@@ -4,7 +4,7 @@ p = pprint.PrettyPrinter() #for debugging
 
 ###### LOGIN ######
 import ConfigParser, os
-config = ConfigParser.RawConfigParser(allow_no_value=False)
+config = ConfigParser.RawConfigParser()
 config.readfp(open("threadbot.cfg"))
 sr = config.get("threadbot", "subreddit")
 user = config.get("threadbot", "username")
