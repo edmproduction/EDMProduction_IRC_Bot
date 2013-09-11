@@ -38,12 +38,8 @@ sort_by_new = False
 if day == 0:
     title =  config.get("monday", "title") + ' (' + d.strftime("%B %d") + ')'
     text = config.get("monday", "text")
-    thread_call = {'api_type': 'json',
-     'kind': 'self',
-      'sr':sr, 'uh': mh,
-      'title':  title,
-       'text': text 
-    }
+    thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
+      'title':  title, 'text': text }
     sort_by_new = True
 elif day == 1:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
@@ -106,7 +102,7 @@ name = thread_r['name']
 tid = thread_r['id']
 url = thread_r['url'] 
 
-
+print "herro?"
 
 #### Mod-Distinguish thread
 
