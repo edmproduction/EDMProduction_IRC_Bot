@@ -25,7 +25,7 @@ mh = login['modhash']
 ##### Check day, select appropriate thread
 
 try:
-    day =  config.get("threadbot", "debug_day")
+    day =  config.getInt("threadbot", "debug_day")
 except ConfigParser.NoOptionError, e:
     d = datetime.date.today()
     day = d.weekday()
@@ -38,8 +38,6 @@ sort_by_new = False
 if day == 0:
     title =  config.get("monday", "title") + ' (' + d.strftime("%B %d") + ')'
     text = config.get("monday", "text")
-    print title
-    print text
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
       'title':  title, 'text': text }
     sort_by_new = True
