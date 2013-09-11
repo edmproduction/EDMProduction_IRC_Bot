@@ -25,7 +25,7 @@ mh = login['modhash']
 ##### Check day, select appropriate thread
 
 try:
-    day =  config.getInt("threadbot", "debug_day")
+    day =  config.getint("threadbot", "debug_day")
 except ConfigParser.NoOptionError, e:
     d = datetime.date.today()
     day = d.weekday()
