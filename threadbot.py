@@ -50,10 +50,9 @@ elif day == 3:
 else:
     sys.exit()
 
-text = "\n\n".join(text.split("\n"))
-
 title = config.get(dayname, "title") + ' (' + d.strftime("%B %d") + ')'
 text = config.get(dayname, "text")
+text = "\n\n".join(text.split("\n"))
 thread_call = {'api_type': 'json',
                  'kind': 'self', 
                  'sr':sr, 'uh': mh, 
