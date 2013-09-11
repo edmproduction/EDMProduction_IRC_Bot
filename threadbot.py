@@ -29,6 +29,7 @@ day = d.weekday()
 # 1 / Tuesday / How do I make this sound thread
 # 2 / Wednesday / There are no stupid questions thread
 # 3 / Thursday / Marketplace thread
+day = 3
 
 if day == 0:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
@@ -100,7 +101,6 @@ tid = thread_r['id']
 url = thread_r['url'] + '?sort=new'
 print url
 
-#print "Submitted thread. Now distinguishing:"
 
 #### Mod-Distinguish thread
 
@@ -110,14 +110,10 @@ thread_r = r.json()['json']
 if len(thread_r['errors']) > 0:
     p.pprint(thread_r)
 
-#print "Submitted thread. Editing to include thread sort link:"
-
 body_text = "*[Please sort this thread by new!]("+url+")\n\n*" + thread_call['text']
-#print "Sending edits."
-edit_data = {'api_type': 'json', 'text': body_text,
-        'thing_id':name, 'uh': mh}
+edit_data = {'api_type': 'json', 'text': body_text, 'thing_id':name, 'uh': mh}
 r = s.post('http://www.reddit.com/api/editusertext', data=edit_data, cookies = cookie)
-#thread_r = r.json()['json']
+
 print "errors:"
 p.pprint(r.json()['json']['errors'])
 
