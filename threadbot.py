@@ -41,12 +41,10 @@ if day == 0:
       'title':  title, 'text': text }
     sort_by_new = True
 elif day == 1:
+        title =  config.get("tuesday", "title") + ' (' + d.strftime("%B %d") + ')'
+    text = config.get("tuesday", "text")
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
-     'title': '"How do I make this sound?" Thread (' + d.strftime("%B %d") + ')', \
-     'text': "Post all \"How do I make this sound?\" questions" + \
-      " in this thread until the next one is created. Any threads made that " + \
-      " should be a comment here will" + \
-      " be removed.\nPlease include a timestamped link to your request." }
+      'title':  title, 'text': text }
     sort_by_new = True
 elif day == 2:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
@@ -115,7 +113,7 @@ if len(thread_r['errors']) > 0:
 #### Edit to include "sort by new" link
 if sort_by_new:
     url = url + '?sort=new'
-    body_text = "* [Please sort this thread by new!]("+url+")\n\n*" + thread_call['text']
+    body_text = "* [Please sort this thread by new!]("+url+")\n\n* " + thread_call['text']
     edit_data = {'api_type': 'json', 'text': body_text, 'thing_id':name, 'uh': mh}
     r = s.post('http://www.reddit.com/api/editusertext', data=edit_data, cookies = cookie)
 
