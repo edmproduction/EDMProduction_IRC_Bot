@@ -24,14 +24,17 @@ mh = login['modhash']
 
 ##### Check day, select appropriate thread
 
-d = datetime.date.today()
-day = d.weekday()
+try:
+    day =  config.get("threadbot", "debug_day")
+except ConfigParser.NoOptionError, e:
+    d = datetime.date.today()
+    day = d.weekday()
+sort_by_new = False
+
 # 0 / Monday / Feedback thread
 # 1 / Tuesday / How do I make this sound thread
 # 2 / Wednesday / There are no stupid questions thread
 # 3 / Thursday / Marketplace thread
-print config.get("threadbot", "debug_day")
-sort_by_new = False
 if day == 0:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
      'title': 'Feedback Thread (' + d.strftime("%B %d") + ')', \
