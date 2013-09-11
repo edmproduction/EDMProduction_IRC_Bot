@@ -50,7 +50,7 @@ elif day == 3:
 else:
     sys.exit()
 
-text = "\n\n".join(mytext.split("\n"))
+text = "\n\n".join(text.split("\n"))
 
 title = config.get(dayname, "title") + ' (' + d.strftime("%B %d") + ')'
 text = config.get(dayname, "text")
