@@ -23,11 +23,10 @@ cookie = {'cookie': login['cookie']}
 mh = login['modhash']
 
 ##### Check day, select appropriate thread
-
+d = datetime.date.today()
 try:
     day =  config.getint("threadbot", "debug_day")
 except ConfigParser.NoOptionError, e:
-    d = datetime.date.today()
     day = d.weekday()
 sort_by_new = False
 
