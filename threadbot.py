@@ -2,7 +2,7 @@ import requests, time, sys, pprint, datetime
 
 p = pprint.PrettyPrinter() #for debugging
 
-###### LOGIN ######
+##### Config
 import ConfigParser, os
 config = ConfigParser.RawConfigParser()
 config.readfp(open("threadbot.cfg"))
@@ -10,6 +10,7 @@ sr = config.get("threadbot", "subreddit")
 user = config.get("threadbot", "username")
 pw = config.get("threadbot", "password")
 
+###### Login
 user_pass_dict = {'user': user,
               'passwd': pw,
               'api_type': 'json'}
@@ -29,8 +30,8 @@ day = d.weekday()
 # 1 / Tuesday / How do I make this sound thread
 # 2 / Wednesday / There are no stupid questions thread
 # 3 / Thursday / Marketplace thread
-day = 3
-
+print config.get("threadbot", "debug_day")
+sort_by_new = False
 if day == 0:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
      'title': 'Feedback Thread (' + d.strftime("%B %d") + ')', \
@@ -43,6 +44,7 @@ if day == 0:
         'effort!\nSomething like:\n\n> [feedback for bob] \n\n> [feedback for bill] \n\n> [feedback' + \
         ' for joe] \n\n> Here\'s my track [link]. I\'m looking for ___'
      }
+     sort_by_new = True
 elif day == 1:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
      'title': '"How do I make this sound?" Thread (' + d.strftime("%B %d") + ')', \
@@ -50,6 +52,7 @@ elif day == 1:
       " in this thread until the next one is created. Any threads made that " + \
       " should be a comment here will" + \
       " be removed.\nPlease include a timestamped link to your request." }
+      sort_by_new = True
 elif day == 2:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
      'title': '"No Stupid Questions" Thread (' + d.strftime("%B %d") + ")", \
@@ -57,6 +60,7 @@ elif day == 2:
       "definitely [RTFM](http://en.wikipedia.org/wiki/RTFM) when you have a question, some days " + \
       "you just [can't get rid of a bomb](http://cdn.uproxx.com/wp-content/uploads/2011/08/tumblr_lpnoa80qJS1qj4b9to2_r1_500.gif)." + \
       " Ask your ~~stupid~~ questions here." }
+      sort_by_new = True
 elif day == 3:
     thread_call = {'api_type': 'json', 'kind': 'self', 'sr':sr, 'uh': mh, \
      'title': 'edmp Marketplace Thread (' + d.strftime("%B %d") + ")", \
@@ -74,10 +78,11 @@ elif day == 3:
               "whether those services are paid or free.\n\nAs with the rest of the subreddit, " + \
               "final decisions over what constitutes an acceptable posting here will be at the " + \
               "sole discretion of the mods." }
+    sort_by_new = False
 else:
     sys.exit()
 
-#### Post thread
+#### Post thread, 'r' is the results; thread_r is a dict of r
 
 r = s.post('http://www.reddit.com/api/submit', data=thread_call, cookies = cookie)
 thread_r = r.json()['json']
@@ -95,11 +100,10 @@ if len(thread_r['errors']) > 0:
     print r.json()
 
 thread_r = thread_r['data']
-#p.pprint(thread_r)
 name = thread_r['name']
 tid = thread_r['id']
-url = thread_r['url'] + '?sort=new'
-print url
+url = thread_r['url'] 
+
 
 
 #### Mod-Distinguish thread
@@ -110,10 +114,15 @@ thread_r = r.json()['json']
 if len(thread_r['errors']) > 0:
     p.pprint(thread_r)
 
-body_text = "*[Please sort this thread by new!]("+url+")\n\n*" + thread_call['text']
-edit_data = {'api_type': 'json', 'text': body_text, 'thing_id':name, 'uh': mh}
-r = s.post('http://www.reddit.com/api/editusertext', data=edit_data, cookies = cookie)
 
+#### Edit to include "sort by new" link
+if sort_by_new:
+    url = url + '?sort=new'
+    body_text = "*[Please sort this thread by new!]("+url+")\n\n*" + thread_call['text']
+    edit_data = {'api_type': 'json', 'text': body_text, 'thing_id':name, 'uh': mh}
+    r = s.post('http://www.reddit.com/api/editusertext', data=edit_data, cookies = cookie)
+
+print url
 print "errors:"
 p.pprint(r.json()['json']['errors'])
 
