@@ -31,6 +31,7 @@ except ConfigParser.NoOptionError, e:
     day = d.weekday()
 sort_by_new = False
 
+print day
 # 0 / Monday / Feedback thread
 # 1 / Tuesday / How do I make this sound thread
 # 2 / Wednesday / There are no stupid questions thread
