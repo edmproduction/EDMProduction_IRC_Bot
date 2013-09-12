@@ -1,11 +1,16 @@
 import requests, time, sys, pprint, datetime
+from optparse import OptionParser
+import ConfigParser, os
 
 p = pprint.PrettyPrinter() #for debugging
 
 ##### Config
-import ConfigParser, os
+parser = OptionParser()
+parser.add_option("-c", "--config", dest="conf_path", type="string", help="config file path")
+(options, args) = parser.parse_args()
+
 config = ConfigParser.RawConfigParser()
-config.readfp(open("threadbot.cfg"))
+config.readfp(open(options.conf_path)) #"threadbot.cfg"
 sr = config.get("threadbot", "subreddit")
 user = config.get("threadbot", "username")
 pw = config.get("threadbot", "password")
@@ -48,10 +53,13 @@ elif day == 3:
     dayname = "thursday"
     sort_by_new = False
 else:
-    sys.exit()
+    sys.exit() # woo inelegance
 
-title = config.get(dayname, "title") + ' (' + d.strftime("%B %d") + ')'
-text = config.get(dayname, "text")
+try:
+    title = config.get(dayname, "title") + ' (' + d.strftime("%B %d") + ')'
+    text = config.get(dayname, "text")
+except:
+    sys.exit() #nothing found for today
 text = "\n\n".join(text.split("\n"))
 thread_call = {'api_type': 'json',
                  'kind': 'self', 
