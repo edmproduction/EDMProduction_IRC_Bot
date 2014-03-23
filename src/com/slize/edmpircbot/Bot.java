@@ -4,6 +4,7 @@ import com.github.jreddit.submissions.Submission;
 import org.jibble.pircbot.*;
 
 public class Bot extends PircBot {
+    private String host;
     private String channel;
 
     private Reddit reddit;
@@ -12,9 +13,10 @@ public class Bot extends PircBot {
 
     public Bot(String nick, String channel, String subreddit) throws Exception {
         this.channel = channel;
+        this.host = "irc.freenode.net";
 
         this.setName(nick);
-        this.connect("irc.freenode.net");
+        this.connect(this.host);
         this.joinChannel(this.channel);
 
         this.reddit = new Reddit(subreddit);
@@ -22,9 +24,10 @@ public class Bot extends PircBot {
 
     public Bot(String nick, String channel, String subreddit, String NickServUsername, String NickServPassword) throws Exception {
         this.channel = channel;
+        this.host = "irc.freenode.net";
 
         this.setName(nick);
-        this.connect("irc.freenode.net");
+        this.connect(this.host);
         this.sendMessage("NickServ", "IDENTIFY " + NickServUsername + " " + NickServPassword);
         Thread.sleep(10000); // Sleep for 10 seconds so we get some time for the identify to pass trough.
         this.joinChannel(this.channel);
@@ -35,9 +38,10 @@ public class Bot extends PircBot {
     public Bot(String nick, String channel, String subreddit, String nickServUsername, String nickServPassword,
                String redditUsername, String redditPassword) throws Exception {
         this.channel = channel;
+        this.host = "irc.freenode.net";
 
         this.setName(nick);
-        this.connect("irc.freenode.net");
+        this.connect(this.host);
         this.sendMessage("NickServ", "IDENTIFY " + nickServUsername + " " + nickServPassword);
         Thread.sleep(10000); // Sleep for 10 seconds so we get some time for the identify to pass trough.
         this.joinChannel(this.channel);
@@ -104,6 +108,32 @@ public class Bot extends PircBot {
         }
 
         printNewSubmissions();
+    }
+
+    protected void onDisconnect() {
+        int attempts = 0;
+
+        System.out.print("Trying to reconnect to server... ");
+
+        while(!isConnected() && attempts < 10) {
+            try {
+                this.connect(host);
+            }
+            catch(Exception err) {
+                System.err.println("\n" + err);
+            }
+
+            try {
+                Thread.sleep(5000);
+            }
+            catch(InterruptedException err) {
+                System.err.println("\n" + err);
+            }
+
+            attempts++;
+        }
+
+        System.out.println("Connected");
     }
 
     private void printNewSubmissions() {
