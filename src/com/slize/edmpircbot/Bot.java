@@ -26,6 +26,7 @@ public class Bot extends PircBot {
         this.setName(nick);
         this.connect("irc.freenode.net");
         this.sendMessage("NickServ", "IDENTIFY " + NickServUsername + " " + NickServPassword);
+        Thread.sleep(10000); // Sleep for 10 seconds so we get some time for the identify to pass trough.
         this.joinChannel(this.channel);
 
         this.reddit = new Reddit(subreddit);
@@ -38,6 +39,7 @@ public class Bot extends PircBot {
         this.setName(nick);
         this.connect("irc.freenode.net");
         this.sendMessage("NickServ", "IDENTIFY " + nickServUsername + " " + nickServPassword);
+        Thread.sleep(10000); // Sleep for 10 seconds so we get some time for the identify to pass trough.
         this.joinChannel(this.channel);
 
         this.reddit = new Reddit(subreddit, redditUsername, redditPassword);
@@ -122,7 +124,7 @@ public class Bot extends PircBot {
                 if(!submissions[i].getURL().equals(lastSubmission.getURL())) {
 
                     try {
-                        sendMessage(channel, submissions[i].getTitle() + " (" + "http://reddit.com" + submissions[i].getURL() + ")");
+                        sendMessage(channel, Colors.PURPLE + "New Submission: " + Colors.NORMAL + submissions[i].getTitle() + " (" + "http://reddit.com" + submissions[i].getURL() + ")");
                     }
                     catch(Exception err) {
                         System.err.println(err);
