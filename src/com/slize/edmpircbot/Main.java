@@ -8,7 +8,7 @@ public class Main {
         String[] redditCfg;
         Bot bot;
 
-        Config config = new Config("config.xml");
+        Config config = new Config(args[0]);
 
         botCfg = config.loadBotSettings();
         nickservCfg = config.loadNickServ();
@@ -23,7 +23,5 @@ public class Main {
         else {
             bot = new Bot(botCfg[0], botCfg[1], botCfg[2], nickservCfg[0], nickservCfg[1], redditCfg[0], redditCfg[1]);
         }
-
-        bot.setVerbose(true);
     }
 }

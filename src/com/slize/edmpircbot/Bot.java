@@ -12,6 +12,8 @@ public class Bot extends PircBot {
     private boolean silentMode = false;
 
     public Bot(String nick, String channel, String subreddit) throws Exception {
+        this.setVerbose(true);
+
         this.channel = channel;
         this.host = "irc.freenode.net";
 
@@ -23,6 +25,8 @@ public class Bot extends PircBot {
     }
 
     public Bot(String nick, String channel, String subreddit, String NickServUsername, String NickServPassword) throws Exception {
+        this.setVerbose(true);
+
         this.channel = channel;
         this.host = "irc.freenode.net";
 
@@ -37,6 +41,8 @@ public class Bot extends PircBot {
 
     public Bot(String nick, String channel, String subreddit, String nickServUsername, String nickServPassword,
                String redditUsername, String redditPassword) throws Exception {
+        this.setVerbose(true);
+
         this.channel = channel;
         this.host = "irc.freenode.net";
 
