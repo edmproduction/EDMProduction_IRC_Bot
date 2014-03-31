@@ -156,9 +156,9 @@ public class Bot extends PircBot {
     protected void onDisconnect() {
         int attempts = 0;
 
-        System.out.print("Trying to reconnect to server... ");
+        LOGGER.info("Disconnected from server, trying to reconnect.");
 
-        while(!isConnected() && attempts < 10) {
+        while(!isConnected() && attempts < 20) {
             try {
                 this.connect(host);
             }
@@ -176,7 +176,15 @@ public class Bot extends PircBot {
             attempts++;
         }
 
-        System.out.println("Connected");
+        if(this.isConnected()) {
+            this.joinChannel(channel);
+
+            LOGGER.info("Connected");
+        }
+        else {
+            LOGGER.warning("Could not reconnect, exiting.");
+            System.exit(0);
+        }
     }
 
     private void printNewSubmissions() {
