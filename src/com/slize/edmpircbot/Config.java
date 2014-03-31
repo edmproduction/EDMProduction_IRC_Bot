@@ -2,11 +2,26 @@ package com.slize.edmpircbot;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class Config {
+    private static final Logger LOGGER = Logger.getLogger(Config.class.getName());
+
     private Properties config;
 
     public Config(String fileName) throws Exception {
+        try {
+            FileHandler fh;
+            fh = new FileHandler("./logs/config.log");
+            LOGGER.addHandler(fh);
+            fh.setFormatter(new SimpleFormatter());
+        }
+        catch(Exception err) {
+            err.printStackTrace();
+        }
+
         config = new Properties();
 
         try {

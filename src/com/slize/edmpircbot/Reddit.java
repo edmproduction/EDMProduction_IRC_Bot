@@ -7,11 +7,28 @@ import com.github.jreddit.submissions.Submissions;
 import com.github.jreddit.user.User;
 import com.github.jreddit.utils.Utils;
 
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 public class Reddit {
+    private static final Logger LOGGER = Logger.getLogger(Reddit.class.getName());
+
     private String subreddit;
     private User user;
 
     public Reddit(String subreddit) {
+        try {
+            FileHandler fh;
+            fh = new FileHandler("./logs/reddit.log");
+            LOGGER.addHandler(fh);
+            fh.setFormatter(new SimpleFormatter());
+        }
+        catch(Exception err) {
+            err.printStackTrace();
+        }
+
         Utils.setUserAgent("EDMPModBot-0.1");
 
         this.subreddit = subreddit;
@@ -19,6 +36,16 @@ public class Reddit {
     }
 
     public Reddit(String subreddit, String username, String password) {
+        try {
+            FileHandler fh;
+            fh = new FileHandler("./logs/reddit.log");
+            LOGGER.addHandler(fh);
+            fh.setFormatter(new SimpleFormatter());
+        }
+        catch(Exception err) {
+            err.printStackTrace();
+        }
+
         Utils.setUserAgent("EDMPModBot-0.1");
 
         this.subreddit = subreddit;
@@ -27,7 +54,7 @@ public class Reddit {
             this.user.connect();
         }
         catch(Exception err) {
-            err.printStackTrace();
+            LOGGER.log(Level.WARNING, err.getMessage(), err);
         }
     }
 

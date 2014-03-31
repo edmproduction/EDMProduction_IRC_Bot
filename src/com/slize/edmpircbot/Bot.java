@@ -3,7 +3,14 @@ package com.slize.edmpircbot;
 import com.github.jreddit.submissions.Submission;
 import org.jibble.pircbot.*;
 
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 public class Bot extends PircBot {
+    private final static Logger LOGGER = Logger.getLogger(Bot.class.getName());
+
     private String host;
     private String channel;
 
@@ -12,6 +19,16 @@ public class Bot extends PircBot {
     private boolean silentMode = false;
 
     public Bot(String nick, String channel, String subreddit) throws Exception {
+        try {
+            FileHandler fh;
+            fh = new FileHandler("./logs/bot.log");
+            LOGGER.addHandler(fh);
+            fh.setFormatter(new SimpleFormatter());
+        }
+        catch(Exception err) {
+            err.printStackTrace();
+        }
+
         this.setVerbose(true);
 
         this.channel = channel;
@@ -25,6 +42,16 @@ public class Bot extends PircBot {
     }
 
     public Bot(String nick, String channel, String subreddit, String NickServUsername, String NickServPassword) throws Exception {
+        try {
+            FileHandler fh;
+            fh = new FileHandler("./logs/bot.log");
+            LOGGER.addHandler(fh);
+            fh.setFormatter(new SimpleFormatter());
+        }
+        catch(Exception err) {
+            err.printStackTrace();
+        }
+
         this.setVerbose(true);
 
         this.channel = channel;
@@ -41,6 +68,16 @@ public class Bot extends PircBot {
 
     public Bot(String nick, String channel, String subreddit, String nickServUsername, String nickServPassword,
                String redditUsername, String redditPassword) throws Exception {
+        try {
+            FileHandler fh;
+            fh = new FileHandler("./logs/bot.log");
+            LOGGER.addHandler(fh);
+            fh.setFormatter(new SimpleFormatter());
+        }
+        catch(Exception err) {
+            err.printStackTrace();
+        }
+
         this.setVerbose(true);
 
         this.channel = channel;
@@ -100,8 +137,8 @@ public class Bot extends PircBot {
                 sendMessage(channel, "Variable is NULL.");
             }
             catch(Exception err) {
-                System.err.println(err);
-                sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Check console for log.");
+                LOGGER.log(Level.WARNING, err.getMessage(), err);
+                sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Could not get variable. This should not happen.");
             }
         }
     }
@@ -126,14 +163,14 @@ public class Bot extends PircBot {
                 this.connect(host);
             }
             catch(Exception err) {
-                System.err.println("\n" + err);
+                LOGGER.log(Level.WARNING, err.getMessage(), err);
             }
 
             try {
                 Thread.sleep(5000);
             }
             catch(InterruptedException err) {
-                System.err.println("\n" + err);
+                LOGGER.log(Level.WARNING, err.getMessage(), err);
             }
 
             attempts++;
@@ -149,7 +186,7 @@ public class Bot extends PircBot {
             submissions = reddit.getNewPosts();
         }
         catch(Exception err) {
-            err.printStackTrace();
+            LOGGER.log(Level.SEVERE, err.getMessage(), err);
             sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Could not get new posts.");
 
             return;
@@ -163,7 +200,7 @@ public class Bot extends PircBot {
                         sendMessage(channel, Colors.PURPLE + "New Submission: " + Colors.NORMAL + submissions[i].getTitle() + " (" + "http://reddit.com" + submissions[i].getURL() + ")");
                     }
                     catch(Exception err) {
-                        System.err.println(err);
+                        LOGGER.log(Level.WARNING, err.getMessage(), err);
                         sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Could not get post title and/or author.");
                     }
                 }
@@ -186,7 +223,7 @@ public class Bot extends PircBot {
                 lastSubmission = submissions[i + 1];
             }
             catch(Exception err) {
-                System.err.println(err);
+                LOGGER.log(Level.WARNING, err.getMessage(), err);
             }
         }
     }
