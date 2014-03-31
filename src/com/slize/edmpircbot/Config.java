@@ -14,7 +14,7 @@ public class Config {
     public Config(String fileName) throws Exception {
         try {
             FileHandler fh;
-            fh = new FileHandler("./logs/config.log");
+            fh = new FileHandler("config.log");
             LOGGER.addHandler(fh);
             fh.setFormatter(new SimpleFormatter());
         }

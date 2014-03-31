@@ -21,7 +21,7 @@ public class Reddit {
     public Reddit(String subreddit) {
         try {
             FileHandler fh;
-            fh = new FileHandler("./logs/reddit.log");
+            fh = new FileHandler("reddit.log");
             LOGGER.addHandler(fh);
             fh.setFormatter(new SimpleFormatter());
         }
@@ -38,7 +38,7 @@ public class Reddit {
     public Reddit(String subreddit, String username, String password) {
         try {
             FileHandler fh;
-            fh = new FileHandler("./logs/reddit.log");
+            fh = new FileHandler("reddit.log");
             LOGGER.addHandler(fh);
             fh.setFormatter(new SimpleFormatter());
         }

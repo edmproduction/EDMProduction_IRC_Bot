@@ -21,7 +21,7 @@ public class Bot extends PircBot {
     public Bot(String nick, String channel, String subreddit) throws Exception {
         try {
             FileHandler fh;
-            fh = new FileHandler("./logs/bot.log");
+            fh = new FileHandler("bot.log");
             LOGGER.addHandler(fh);
             fh.setFormatter(new SimpleFormatter());
         }
@@ -44,7 +44,7 @@ public class Bot extends PircBot {
     public Bot(String nick, String channel, String subreddit, String NickServUsername, String NickServPassword) throws Exception {
         try {
             FileHandler fh;
-            fh = new FileHandler("./logs/bot.log");
+            fh = new FileHandler("bot.log");
             LOGGER.addHandler(fh);
             fh.setFormatter(new SimpleFormatter());
         }
@@ -70,7 +70,7 @@ public class Bot extends PircBot {
                String redditUsername, String redditPassword) throws Exception {
         try {
             FileHandler fh;
-            fh = new FileHandler("./logs/bot.log");
+            fh = new FileHandler("bot.log");
             LOGGER.addHandler(fh);
             fh.setFormatter(new SimpleFormatter());
         }
@@ -104,13 +104,13 @@ public class Bot extends PircBot {
                 if(messageSplit[1].equals("on") && !silentMode) {
                     silentMode = true;
 
-                    System.out.println("Silent Mode: On");
+                    LOGGER.finer("Silent Mode: On");
                     sendMessage(channel, "Silent mode is now on.");
                 }
                 else if(messageSplit[1].equals("off") && silentMode) {
                     silentMode = false;
 
-                    System.out.println("Silent Mode: Off");
+                    LOGGER.finer("Silent Mode: Off");
                     sendMessage(channel, "Silent mode is now off.");
                 }
                 else {
@@ -139,6 +139,31 @@ public class Bot extends PircBot {
             catch(Exception err) {
                 LOGGER.log(Level.WARNING, err.getMessage(), err);
                 sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Could not get variable. This should not happen.");
+            }
+        }
+        else if(messageSplit[0].equals("@log")) {
+            try {
+                if(messageSplit[1].equalsIgnoreCase("info")) {
+                    LOGGER.setLevel(Level.INFO);
+                }
+                else if(messageSplit[1].equalsIgnoreCase("fine")) {
+                    LOGGER.setLevel(Level.FINE);
+                }
+                else if(messageSplit[1].equalsIgnoreCase("finer")) {
+                    LOGGER.setLevel(Level.FINER);
+                }
+                else if(messageSplit[1].equalsIgnoreCase("finest")) {
+                    LOGGER.setLevel(Level.FINEST);
+                }
+                else if(messageSplit[1].equalsIgnoreCase("all")) {
+                    LOGGER.setLevel(Level.ALL);
+                }
+                else {
+                    sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid mode.");
+                }
+            }
+            catch(ArrayIndexOutOfBoundsException err) {
+                sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid syntax. @log <mode>");
             }
         }
     }
