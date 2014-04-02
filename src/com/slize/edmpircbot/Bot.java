@@ -15,7 +15,7 @@ public class Bot extends PircBot {
     private String channel;
 
     private Reddit reddit;
-    private Submission lastSubmission;
+    private Submission[] lastSubmissions;
     private boolean silentMode = false;
 
     public Bot(String nick, String channel, String subreddit) throws Exception {
@@ -126,9 +126,6 @@ public class Bot extends PircBot {
                 if(messageSplit[1].equalsIgnoreCase("silent") || messageSplit[1].equalsIgnoreCase("silentmode")) {
                     sendMessage(channel, String.valueOf(silentMode));
                 }
-                else if(messageSplit[1].equalsIgnoreCase("lastsubmission")) {
-                    sendMessage(channel, lastSubmission.toString() + " (" + lastSubmission.getTitle() + ")");
-                }
             }
             catch(ArrayIndexOutOfBoundsException err) {
                 sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid syntax. @var <variable>");
@@ -214,9 +211,17 @@ public class Bot extends PircBot {
 
     private void printNewSubmissions() {
         Submission[] submissions;
+        boolean submissionExists;
+
+        LOGGER.info("Printing new submissions.");
 
         try {
             submissions = reddit.getNewPosts();
+        }
+        catch(NullPointerException err) {
+            LOGGER.log(Level.SEVERE, err.getMessage(), err);
+
+            return;
         }
         catch(Exception err) {
             LOGGER.log(Level.SEVERE, err.getMessage(), err);
@@ -225,12 +230,29 @@ public class Bot extends PircBot {
             return;
         }
 
-        for(int i = 0; i < submissions.length; i++) {
+        for(int currentSubmission = 0; currentSubmission < submissions.length; currentSubmission++) {
             try {
-                if(!submissions[i].getURL().equals(lastSubmission.getURL())) {
+                submissionExists = true;
 
+                // Check if any the current submission + 1 is the same as the last submission.
+                for(Submission lastSubmission : lastSubmissions) {
+                    for(int j = currentSubmission + 1; j < submissions.length; j++) {
+                        if(lastSubmission.getURL().equals(submissions[j].getURL())) {
+                            submissionExists = false;
+                            break;
+                        }
+                    }
+
+                    if(!submissionExists) {
+                        break;
+                    }
+                }
+
+                if(!submissionExists) {
                     try {
-                        sendMessage(channel, Colors.PURPLE + "New Submission: " + Colors.NORMAL + submissions[i].getTitle() + " (" + "http://reddit.com" + submissions[i].getURL() + ")");
+                        sendMessage(channel, Colors.PURPLE + "New Submission: " + Colors.NORMAL +
+                                    submissions[currentSubmission].getTitle() + " (" + "http://reddit.com" +
+                                    submissions[currentSubmission].getURL() + ")");
                     }
                     catch(Exception err) {
                         LOGGER.log(Level.WARNING, err.getMessage(), err);
@@ -239,13 +261,8 @@ public class Bot extends PircBot {
                 }
                 else {
                     // If the last submission is still the last submission on the subreddit,
-                    // then the program will end up in the catch statement.
-                    try {
-                        lastSubmission = submissions[i - 1];
-                    }
-                    catch(ArrayIndexOutOfBoundsException err) {
-                        lastSubmission = submissions[i];
-                    }
+                    // then the method will end up in the catch statement.
+                    lastSubmissions = submissions;
 
                     return;
                 }
@@ -253,7 +270,8 @@ public class Bot extends PircBot {
             // The program will always get a NullPointerException when first booting up.
             // We fix this by catching the exception and putting the last submission to i + 1.
             catch(NullPointerException err) {
-                lastSubmission = submissions[i + 1];
+                lastSubmissions = submissions;
+                return;
             }
             catch(Exception err) {
                 LOGGER.log(Level.WARNING, err.getMessage(), err);
