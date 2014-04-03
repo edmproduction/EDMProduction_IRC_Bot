@@ -14,14 +14,6 @@ public class Main {
         nickservCfg = config.loadNickServ();
         redditCfg = config.loadReddit();
 
-        if(nickservCfg == null && redditCfg == null) {
-            bot = new Bot(botCfg[0], botCfg[1], botCfg[2], config);
-        }
-        else if(redditCfg == null) {
-            bot = new Bot(botCfg[0], botCfg[1], botCfg[2], config, nickservCfg[0], nickservCfg[1]);
-        }
-        else {
-            bot = new Bot(botCfg[0], botCfg[1], botCfg[2], config, nickservCfg[0], nickservCfg[1], redditCfg[0], redditCfg[1]);
-        }
+        bot = new Bot(botCfg[0], botCfg[1], botCfg[2], config, nickservCfg[0], nickservCfg[1], redditCfg[0], redditCfg[1]);
     }
 }

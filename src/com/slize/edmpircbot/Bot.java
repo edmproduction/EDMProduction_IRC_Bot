@@ -16,64 +16,6 @@ public class Bot extends PircBot {
     private ArrayList<Submission[]> lastSubmissions = new ArrayList<Submission[]>();
     private ArrayList<Boolean> silentMode = new ArrayList<Boolean>();
 
-    public Bot(String nick, String channel, String subreddit, Config config) throws Exception {
-        try {
-            FileHandler fh;
-            fh = new FileHandler("bot.log");
-            LOGGER.addHandler(fh);
-            fh.setFormatter(new SimpleFormatter());
-        }
-        catch(Exception err) {
-            err.printStackTrace();
-        }
-
-        this.setVerbose(true);
-
-        this.config = config;
-        this.host = "irc.freenode.net";
-
-        this.setName(nick);
-        this.connect(this.host);
-        this.joinChannel(channel);
-
-        this.reddit = new Reddit();
-
-        String[] tmp = subreddit.split(",");
-        for(int i = 0; i < tmp.length; i++) {
-            silentMode.add(false);
-        }
-    }
-
-    public Bot(String nick, String channel, String subreddit, Config config, String NickServUsername, String NickServPassword) throws Exception {
-        try {
-            FileHandler fh;
-            fh = new FileHandler("bot.log");
-            LOGGER.addHandler(fh);
-            fh.setFormatter(new SimpleFormatter());
-        }
-        catch(Exception err) {
-            err.printStackTrace();
-        }
-
-        this.setVerbose(true);
-
-        this.config = config;
-        this.host = "irc.freenode.net";
-
-        this.setName(nick);
-        this.connect(this.host);
-        this.sendMessage("NickServ", "IDENTIFY " + NickServUsername + " " + NickServPassword);
-        Thread.sleep(10000); // Sleep for 10 seconds so we get some time for the identify to pass trough.
-        this.joinChannel(channel);
-
-        this.reddit = new Reddit();
-
-        String[] tmp = subreddit.split(",");
-        for(int i = 0; i < tmp.length; i++) {
-            silentMode.add(false);
-        }
-    }
-
     public Bot(String nick, String channel, String subreddit, Config config, String nickServUsername, String nickServPassword,
                String redditUsername, String redditPassword) throws Exception {
         try {
@@ -99,8 +41,8 @@ public class Bot extends PircBot {
 
         this.reddit = new Reddit(redditUsername, redditPassword);
 
-        String[] tmp = subreddit.split(",");
-        for(int i = 0; i < tmp.length; i++) {
+        String[] subreddits = subreddit.split(",");
+        for(String tmp : subreddits) {
             silentMode.add(false);
         }
     }
