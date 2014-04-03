@@ -15,10 +15,9 @@ import java.util.logging.SimpleFormatter;
 public class Reddit {
     private static final Logger LOGGER = Logger.getLogger(Reddit.class.getName());
 
-    private String subreddit;
     private User user;
 
-    public Reddit(String subreddit) {
+    public Reddit() {
         try {
             FileHandler fh;
             fh = new FileHandler("reddit.log");
@@ -31,11 +30,10 @@ public class Reddit {
 
         Utils.setUserAgent("EDMPModBot-0.1");
 
-        this.subreddit = subreddit;
         this.user = new User();
     }
 
-    public Reddit(String subreddit, String username, String password) {
+    public Reddit(String username, String password) {
         try {
             FileHandler fh;
             fh = new FileHandler("reddit.log");
@@ -48,7 +46,6 @@ public class Reddit {
 
         Utils.setUserAgent("EDMPModBot-0.1");
 
-        this.subreddit = subreddit;
         this.user = new User(username, password);
         try {
             this.user.connect();
@@ -58,7 +55,7 @@ public class Reddit {
         }
     }
 
-    public Submission[] getNewPosts() throws Exception {
+    public Submission[] getNewPosts(String subreddit) throws Exception {
         Submission[] submissions = new Submission[25];
         int i = 0;
 
