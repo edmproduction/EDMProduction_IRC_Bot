@@ -51,6 +51,7 @@ public class Bot extends PircBot {
         String[] messageSplit = message.split(" ");
         User user = null;
 
+
         // Get user, so we can check later if the user is a op.
         for(User tmpUser : getUsers(channel)) {
             if(tmpUser.equals(sender)) {
@@ -74,6 +75,18 @@ public class Bot extends PircBot {
                         sendMessage(channel, Colors.BOLD + "@log <info/fine/finer/finest>; " + Colors.NORMAL +
                                 "Changes log mode.");
                     }
+                    else if(messageSplit[1].equalsIgnoreCase("kick") && user.isOp()) {
+                        sendMessage(channel, Colors.BOLD + "@kick <nick> <channel> [reason]; " + Colors.NORMAL +
+                                "Kicks <nick> from [channel]. If [channel] is not present, then it will kick from #edmproduction.");
+                    }
+                    else if(messageSplit[1].equalsIgnoreCase("ban") && user.isOp()) {
+                        sendMessage(channel, Colors.BOLD + "@ban <nick> <channel> [reason]; " + Colors.NORMAL +
+                                "Bans <nick> from [channel]. If [channel] is not present, then it will ban from #edmproduction.");
+                    }
+                    else if(messageSplit[1].equalsIgnoreCase("frequency")) {
+                        sendMessage(channel, Colors.BOLD + "@frequency <frequency(Hz)>; " + Colors.NORMAL +
+                                Colors.RED + "Not implemented." + Colors.NORMAL + "Returns the frequency's corresponding note.");
+                    }
                     else {
                         sendMessage(channel, "Command not found.");
                     }
@@ -83,12 +96,56 @@ public class Bot extends PircBot {
 
                     // Operator commands
                     if(user.isOp()) {
-                        commands = "print, silent, log, ";
+                        commands = "print, silent, log, kick, :";
                     }
 
                     commands += "frequency (To be implemented)"; // User commands
 
-                    sendMessage(channel, "Available commands are: " + commands);
+                    sendMessage(channel, "Available commands are: " + commands + ". Do @help <command> for more help.");
+                }
+            }
+            else if(messageSplit[0].equalsIgnoreCase("@kick") && user.isOp()) {
+                try {
+                    String kickMessage = "";
+
+                    for(int i = 3; i < messageSplit.length; i++) {
+                        kickMessage += messageSplit[i] + " ";
+                    }
+
+                    kick(messageSplit[2], messageSplit[1], kickMessage);
+                }
+                catch(ArrayIndexOutOfBoundsException err1) {
+                    try {
+                        kick(messageSplit[2], messageSplit[1]);
+                    }
+                    catch(ArrayIndexOutOfBoundsException err2) {
+                        sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL +
+                                "Invalid Syntax. @kick <nick> <channel> [reason]");
+                    }
+
+                }
+
+            }
+            else if(messageSplit[0].equalsIgnoreCase("@ban") && user.isOp()) {
+                try {
+                    String kickMessage = "";
+
+                    for(int i = 3; i < messageSplit.length; i++) {
+                        kickMessage += messageSplit[i] + " ";
+                    }
+
+                    ban(messageSplit[2], messageSplit[1] + "!*@*");
+                    kick(messageSplit[2], messageSplit[1], kickMessage);
+                }
+                catch(ArrayIndexOutOfBoundsException err1) {
+                    try {
+                        ban(messageSplit[2], messageSplit[1]);
+                        kick(messageSplit[2], messageSplit[1], "You have been banned from this channel.");
+                    }
+                    catch(ArrayIndexOutOfBoundsException err2) {
+                        sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL +
+                                    "Invalid Syntax. @ban <nick> <channel> [reason]");
+                    }
                 }
             }
             else if(messageSplit[0].equalsIgnoreCase("@print") && user.isOp()) {
