@@ -49,91 +49,104 @@ public class Bot extends PircBot {
 
     protected void onMessage(String channel, String sender, String login, String hostname, String message)  {
         String[] messageSplit = message.split(" ");
+        User user = null;
 
-        if(messageSplit[0].equalsIgnoreCase("@print")) {
-            try {
-                printNewSubmissions(channel, messageSplit[1]);
-            }
-            catch(ArrayIndexOutOfBoundsException err) {
-                // Print new submissions from main subreddit.
-                printNewSubmissions(channel, config.loadBotSettings()[2].split(",")[0]);
+        // Get user, so we can check later if the user is a op.
+        for(User tmpUser : getUsers(channel)) {
+            if(tmpUser.equals(sender)) {
+                user = tmpUser;
+                break;
             }
         }
-        else if(messageSplit[0].equals("@silent")) {
-            try {
-                String[] subreddits = config.loadBotSettings()[2].split(",");
+        try {
+            if(messageSplit[0].equalsIgnoreCase("@print") && user.isOp()) {
+                try {
+                    printNewSubmissions(channel, messageSplit[1]);
+                }
+                catch(ArrayIndexOutOfBoundsException err) {
+                    // Print new submissions from main subreddit.
+                    printNewSubmissions(channel, config.loadBotSettings()[2].split(",")[0]);
+                }
+            }
+            else if(messageSplit[0].equalsIgnoreCase("@silent") && user.isOp()) {
+                try {
+                    String[] subreddits = config.loadBotSettings()[2].split(",");
 
-                for(int i = 0; i < subreddits.length; i++) {
-                    if(messageSplit[2].equals("on") && !silentMode.get(i)) {
-                        silentMode.set(i, true);
+                    for(int i = 0; i < subreddits.length; i++) {
+                        if(messageSplit[2].equals("on") && !silentMode.get(i)) {
+                            silentMode.set(i, true);
 
-                        LOGGER.finer("Silent Mode: On");
-                        sendMessage(channel, "Silent mode is now on for " + messageSplit[1] + ".");
+                            LOGGER.finer("Silent Mode: On");
+                            sendMessage(channel, "Silent mode is now on for " + messageSplit[1] + ".");
+                        }
+                        else if(messageSplit[2].equals("off") && silentMode.get(i)) {
+                            silentMode.set(i, false);
+
+                            LOGGER.finer("Silent Mode: Off");
+                            sendMessage(channel, "Silent mode is now off for " + messageSplit[1] + ".");
+                        }
+                        else {
+                            sendMessage(channel, "Silent mode is already turned " + messageSplit[2] + " for this subreddit.");
+                        }
                     }
-                    else if(messageSplit[2].equals("off") && silentMode.get(i)) {
-                        silentMode.set(i, false);
+                }
+                catch(ArrayIndexOutOfBoundsException err) {
+                    try {
+                        if(messageSplit[1].equals("on")) {
+                            for(int i = 0; i < silentMode.size() - 1; i++) {
+                                silentMode.set(i, true);
+                            }
 
-                        LOGGER.finer("Silent Mode: Off");
-                        sendMessage(channel, "Silent mode is now off for " + messageSplit[1] + ".");
+                            LOGGER.fine("Silent Mode: On");
+                            sendMessage(channel, "Silent mode is now on for all subreddits.");
+                        }
+                        else if(messageSplit[1].equals("off")) {
+                            for(int i = 0; i < silentMode.size() - 1; i++) {
+                                silentMode.set(i, false);
+                            }
+
+                            LOGGER.fine("Silent Mode: Off");
+                            sendMessage(channel, "Silent mode is now off for all subreddits.");
+                        }
+                    }
+                    catch(ArrayIndexOutOfBoundsException err2) {
+                        sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid syntax. @silent [channel] <on/off>");
+                    }
+                }
+            }
+            else if(messageSplit[0].equalsIgnoreCase("@log") && user.isOp()) {
+                try {
+                    if(messageSplit[1].equalsIgnoreCase("info")) {
+                        setLoggerLevel(Level.INFO);
+                        sendMessage(channel, "Logging level set to " + LOGGER.getLevel());
+                    }
+                    else if(messageSplit[1].equalsIgnoreCase("fine")) {
+                        setLoggerLevel(Level.FINE);
+                        sendMessage(channel, "Logging level set to " + LOGGER.getLevel());
+                    }
+                    else if(messageSplit[1].equalsIgnoreCase("finer")) {
+                        setLoggerLevel(Level.FINER);
+                        sendMessage(channel, "Logging level set to " + LOGGER.getLevel());
+                    }
+                    else if(messageSplit[1].equalsIgnoreCase("finest")) {
+                        setLoggerLevel(Level.FINEST);
+                        sendMessage(channel, "Logging level set to " + LOGGER.getLevel());
+                    }
+                    else if(messageSplit[1].equalsIgnoreCase("all")) {
+                        setLoggerLevel(Level.ALL);
+                        sendMessage(channel, "Logging level set to " + LOGGER.getLevel());
                     }
                     else {
-                        sendMessage(channel, "Silent mode is already turned " + messageSplit[2] + " for this subreddit.");
+                        sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid mode.");
                     }
                 }
-            }
-            catch(ArrayIndexOutOfBoundsException err) {
-                try {
-                    if(messageSplit[1].equals("on")) {
-                        for(int i = 0; i < silentMode.size() - 1; i++) {
-                            silentMode.set(i, false);
-                        }
-
-                        LOGGER.fine("Silent Mode: On");
-                        sendMessage(channel, "Silent mode is now on for all subreddits.");
-                    }
-                    else if(messageSplit[1].equals("off")) {
-                        for(int i = 0; i < silentMode.size() - 1; i++) {
-                            silentMode.set(i, false);
-                        }
-
-                        LOGGER.fine("Silent Mode: Off");
-                        sendMessage(channel, "Silent mode is now off for all subreddits.");
-                    }
-                }
-                catch(ArrayIndexOutOfBoundsException err2) {
-                    sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid syntax. @silent [channel] <on/off>");
+                catch(ArrayIndexOutOfBoundsException err) {
+                    sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid syntax. @log <mode>");
                 }
             }
         }
-        else if(messageSplit[0].equals("@log")) {
-            try {
-                if(messageSplit[1].equalsIgnoreCase("info")) {
-                    setLoggerLevel(Level.INFO);
-                    sendMessage(channel, "Logging level set to " + LOGGER.getLevel());
-                }
-                else if(messageSplit[1].equalsIgnoreCase("fine")) {
-                    setLoggerLevel(Level.FINE);
-                    sendMessage(channel, "Logging level set to " + LOGGER.getLevel());
-                }
-                else if(messageSplit[1].equalsIgnoreCase("finer")) {
-                    setLoggerLevel(Level.FINER);
-                    sendMessage(channel, "Logging level set to " + LOGGER.getLevel());
-                }
-                else if(messageSplit[1].equalsIgnoreCase("finest")) {
-                    setLoggerLevel(Level.FINEST);
-                    sendMessage(channel, "Logging level set to " + LOGGER.getLevel());
-                }
-                else if(messageSplit[1].equalsIgnoreCase("all")) {
-                    setLoggerLevel(Level.ALL);
-                    sendMessage(channel, "Logging level set to " + LOGGER.getLevel());
-                }
-                else {
-                    sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid mode.");
-                }
-            }
-            catch(ArrayIndexOutOfBoundsException err) {
-                sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid syntax. @log <mode>");
-            }
+        catch(NullPointerException err) {
+            LOGGER.warning("Could find sender in channel users.");
         }
     }
 
@@ -197,7 +210,7 @@ public class Bot extends PircBot {
         boolean submissionExists;
         int lastSubmissionIndex = 0;
 
-        LOGGER.info("Printing new submissions.");
+        LOGGER.finer("Printing new submissions.");
 
         try {
             submissions = reddit.getNewPosts(subreddit);
@@ -248,7 +261,6 @@ public class Bot extends PircBot {
                 for(int i = lastSubmissions.length - 1; i >= 0; i--) {
                     try {
                         if (submission.getURL().equals(lastSubmissions[i].getURL())) {
-                            LOGGER.finest("Submission exists in lastSubmissions.");
                             submissionExists = true;
                         }
                     }
@@ -271,7 +283,7 @@ public class Bot extends PircBot {
                 else {
                     // When there are no more new submissions, we replace the old submission array with the current one.
                     this.lastSubmissions.set(lastSubmissionIndex, submissions);
-                    LOGGER.finer("Replacing submissions.");
+                    LOGGER.finest("Replacing submissions.");
 
                     return;
                 }
