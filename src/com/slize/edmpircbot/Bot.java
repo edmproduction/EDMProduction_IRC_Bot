@@ -58,8 +58,40 @@ public class Bot extends PircBot {
                 break;
             }
         }
+
         try {
-            if(messageSplit[0].equalsIgnoreCase("@print") && user.isOp()) {
+            if(messageSplit[0].equalsIgnoreCase("@help")) {
+                try {
+                    if(messageSplit[1].equalsIgnoreCase("print") && user.isOp()) {
+                        sendMessage(channel, Colors.BOLD + "@print [subreddit]; " + Colors.NORMAL +
+                                             "If nothing is printed, it means that there are no new submissions.");
+                    }
+                    else if(messageSplit[1].equalsIgnoreCase("silent") && user.isOp()) {
+                        sendMessage(channel, Colors.BOLD + "@silent [subreddit] <on/off>; " + Colors.NORMAL +
+                                             "Turns automatic checks for new submissions on [subreddit] off.");
+                    }
+                    else if(messageSplit[1].equalsIgnoreCase("log") && user.isOp()) {
+                        sendMessage(channel, Colors.BOLD + "@log <info/fine/finer/finest>; " + Colors.NORMAL +
+                                "Changes log mode.");
+                    }
+                    else {
+                        sendMessage(channel, "Command not found.");
+                    }
+                }
+                catch(ArrayIndexOutOfBoundsException err) {
+                    String commands = "";
+
+                    // Operator commands
+                    if(user.isOp()) {
+                        commands = "print, silent, log, ";
+                    }
+
+                    commands += "frequency (To be implemented)"; // User commands
+
+                    sendMessage(channel, "Available commands are: " + commands);
+                }
+            }
+            else if(messageSplit[0].equalsIgnoreCase("@print") && user.isOp()) {
                 try {
                     printNewSubmissions(channel, messageSplit[1]);
                 }
