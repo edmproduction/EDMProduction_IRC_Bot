@@ -42,7 +42,7 @@ public class Bot extends PircBot {
         this.reddit = new Reddit(redditUsername, redditPassword);
 
         String[] subreddits = subreddit.split(",");
-        for(String tmp : subreddits) {
+        for(String ignored : subreddits) {
             silentMode.add(false);
         }
     }
@@ -55,7 +55,7 @@ public class Bot extends PircBot {
                 printNewSubmissions(channel, messageSplit[1]);
             }
             catch(ArrayIndexOutOfBoundsException err) {
-                // Print new submissions from main channel.
+                // Print new submissions from main subreddit.
                 printNewSubmissions(channel, config.loadBotSettings()[2].split(",")[0]);
             }
         }
@@ -146,7 +146,12 @@ public class Bot extends PircBot {
         // if silentMode is not on for that subreddit.
         for(int i = 0; i < subreddits.length; i++) {
             if(!silentMode.get(i)) {
-                printNewSubmissions(config.loadBotSettings()[1].split(",")[0], subreddits[i]);
+                if(subreddits[i].equals("edmproduction")) {
+                    printNewSubmissions(config.loadBotSettings()[1].split(",")[1], subreddits[i]);
+                }
+                else {
+                    printNewSubmissions(config.loadBotSettings()[1].split(",")[0], subreddits[i]);
+                }
             }
         }
     }
