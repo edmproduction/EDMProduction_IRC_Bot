@@ -62,6 +62,18 @@ public class Config {
 
         return reddit;
     }
+
+    public String[] loadSpamSettings() {
+        String[] spam = new String[5];
+
+        spam[0] = config.getProperty("spam.time");
+        spam[1] = config.getProperty("spam.lines");
+        spam[2] = config.getProperty("spam.bantime.1");
+        spam[3] = config.getProperty("spam.bantime.2");
+        spam[4] = config.getProperty("spam.bantime.3");
+
+        return spam;
+    }
 }
 
 

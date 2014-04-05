@@ -3,9 +3,9 @@ package com.slize.edmpircbot;
 import com.github.jreddit.submissions.Submission;
 import org.jibble.pircbot.*;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.logging.*;
-
 
 public class Bot extends PircBot {
     private final static Logger LOGGER = Logger.getLogger(Bot.class.getName());
@@ -16,6 +16,10 @@ public class Bot extends PircBot {
     private Reddit reddit;
     private ArrayList<Submission[]> lastSubmissions = new ArrayList<Submission[]>();
     private ArrayList<Boolean> silentMode = new ArrayList<Boolean>();
+
+    private ArrayList<SpamUser> spamUsers = new ArrayList<SpamUser>();
+    private int spamTime;
+    private int spamLines;
 
     public Bot(String nick, String channel, String subreddit, Config config, String nickServUsername, String nickServPassword,
                String redditUsername, String redditPassword) throws Exception {
@@ -37,7 +41,7 @@ public class Bot extends PircBot {
         this.setName(nick);
         this.connect(this.host);
         this.sendMessage("NickServ", "IDENTIFY " + nickServUsername + " " + nickServPassword);
-        Thread.sleep(10000); // Sleep for 10 seconds so we get some time for the identify to pass trough.
+        Thread.sleep(10000); // Sleep for 10 seconds so we get some kickTime for the identify to pass trough.
         this.joinChannel(channel);
 
         this.reddit = new Reddit(redditUsername, redditPassword);
@@ -46,6 +50,9 @@ public class Bot extends PircBot {
         for(String ignored : subreddits) {
             silentMode.add(false);
         }
+
+        this.spamTime = Integer.parseInt(config.loadSpamSettings()[0]);
+        this.spamLines = Integer.parseInt(config.loadSpamSettings()[1]);
     }
 
     protected void onMessage(String channel, String sender, String login, String hostname, String message)  {
@@ -58,6 +65,76 @@ public class Bot extends PircBot {
             if(tmpUser.equals(sender)) {
                 user = tmpUser;
                 break;
+            }
+        }
+
+        // Check if the user is spamming.
+        if(!user.isOp()) {
+            boolean foundUser = false;
+
+            if(spamUsers.size() == 0) {
+                spamUsers.add(new SpamUser(sender, hostname, channel));
+            }
+
+            for(int i = 0; i < spamUsers.size() - 1; i++) {
+                if(spamUsers.get(i).nick.equals(sender) && spamUsers.get(i).channel.equals(channel)) {
+                    spamUsers.get(i).lines++;
+
+                    LOGGER.finest("Found user");
+
+                    System.err.println("DEBUG: times kicked = " + spamUsers.get(i).timesKicked);
+
+                    if((int)System.currentTimeMillis() - spamUsers.get(i).kickTime <= spamTime &&
+                            spamUsers.get(i).lines >= spamLines) {
+                        if(spamUsers.get(i).timesKicked >= 3) {
+                            ban(channel, "*!*@" + spamUsers.get(i).hostname);
+
+                            switch (spamUsers.get(i).timesBanned) {
+                                case 0: spamUsers.get(i).banTime = Integer.parseInt(config.loadSpamSettings()[2]);
+                                        break;
+                                case 1: spamUsers.get(i).banTime = Integer.parseInt(config.loadSpamSettings()[3]);
+                                        break;
+                                case 2: spamUsers.get(i).banTime = Integer.parseInt(config.loadSpamSettings()[4]);
+                                        break;
+                                case 3: spamUsers.get(i).banTime = -1; // Permanent ban.
+                                        break;
+                            }
+
+                            spamUsers.get(i).timesBanned++;
+                            spamUsers.get(i).timesKicked = 0;
+                            spamUsers.get(i).isBanned = true;
+
+                            kick(channel, sender, "You have been banned for " + (spamUsers.get(i).banTime / 1000 / 60) +
+                                                  " minutes for flooding the channel.");
+
+                            LOGGER.info("Banning " + sender + " for " + spamUsers.get(i).banTime +
+                                        " milliseconds for spamming the channel.");
+
+                            return;
+                        }
+
+                        kick(channel, sender, "Please don't flood the channel.");
+                        LOGGER.info("Kicking " + sender + " for spamming the channel.");
+
+                        spamUsers.get(i).timesKicked++;
+                        spamUsers.get(i).kickTime = (int) System.currentTimeMillis();
+                        spamUsers.get(i).lines = 0;
+
+                        return;
+                    }
+                    else if((int)System.currentTimeMillis() - spamUsers.get(i).kickTime >= spamTime) {
+                        LOGGER.finest("Replacing time and lines.");
+                        spamUsers.get(i).kickTime = (int) System.currentTimeMillis();
+                        spamUsers.get(i).lines = 0;
+                    }
+
+                    foundUser = true;
+                }
+            }
+
+            if(!foundUser) {
+                LOGGER.finest("Creating new user");
+                spamUsers.add(new SpamUser(sender, hostname, channel));
             }
         }
 
@@ -84,6 +161,10 @@ public class Bot extends PircBot {
                     else if(messageSplit[1].equalsIgnoreCase("ban") && user.isOp()) {
                         sendMessage(channel, Colors.BOLD + "@ban <nick> <channel> [reason]; " + Colors.NORMAL +
                                 "Bans <nick> from [channel]. If [channel] is not present, then it will ban from #edmproduction.");
+                    }
+                    else if(messageSplit[1].equalsIgnoreCase("set") && user.isOp()) {
+                        sendMessage(channel, Colors.BOLD + "@set <variable> <value>; " + Colors.NORMAL +
+                                "Sets the value of <variable>. Available variables are: spamTime, spamLines");
                     }
                     else if(messageSplit[1].equalsIgnoreCase("frequency")) {
                         sendMessage(channel, Colors.BOLD + "@frequency <frequency(Hz)>; " + Colors.NORMAL +
@@ -240,6 +321,22 @@ public class Bot extends PircBot {
                     sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid syntax. @log <mode>");
                 }
             }
+            else if(messageSplit[0].equalsIgnoreCase("@set") && user.isOp()) {
+                try {
+                    if(messageSplit[1].equalsIgnoreCase("spamTime")) {
+                        spamTime = Integer.parseInt(messageSplit[2]);
+                    }
+                    else if(messageSplit[1].equalsIgnoreCase("spamLines")) {
+                        spamLines = Integer.parseInt(messageSplit[2]);
+                    }
+                }
+                catch(ArrayIndexOutOfBoundsException err) {
+                    sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid syntax. @set <variable> <value>");
+                }
+                catch(NumberFormatException err) {
+                    sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "You have to input a number");
+                }
+            }
         }
         catch(NullPointerException err) {
             LOGGER.warning("Could find sender in channel users.");
@@ -263,6 +360,17 @@ public class Bot extends PircBot {
                 }
             }
         }
+
+        // Check if users ban time is over.
+        for(int i = 0; i < spamUsers.size(); i++) {
+            if (spamUsers.get(i).isBanned) {
+                if ((int) System.currentTimeMillis() - spamUsers.get(i).banTime > spamUsers.get(i).banTime && spamUsers.get(i).banTime != -1) {
+                    unBan(spamUsers.get(i).channel, "*!*@" + spamUsers.get(i).hostname);
+                    spamUsers.get(i).isBanned = false;
+                    LOGGER.info("Unbanning " + spamUsers.get(i).nick);
+                }
+            }
+        }
     }
 
     protected void onDisconnect() {
@@ -271,6 +379,9 @@ public class Bot extends PircBot {
         while(!isConnected()) {
             try {
                 this.connect(host);
+            }
+            catch(ConnectException err) {
+                LOGGER.warning("Connection timed out when trying to connect.");
             }
             catch(Exception err) {
                 LOGGER.log(Level.WARNING, "Error when trying to connect to server.", err);
