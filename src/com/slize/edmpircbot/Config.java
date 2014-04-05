@@ -1,6 +1,5 @@
 package com.slize.edmpircbot;
 
-import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -45,7 +44,7 @@ public class Config {
         return bot;
     }
 
-    public String[] loadNickServ() throws IOException {
+    public String[] loadNickServ() {
         String[] nickserv = new String[2];
 
         nickserv[0] = config.getProperty("nickserv.user");

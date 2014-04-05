@@ -397,6 +397,13 @@ public class Bot extends PircBot {
         }
 
         if(this.isConnected()) {
+            this.sendMessage("NickServ", "IDENTIFY " + config.loadNickServ()[0] + " " + config.loadNickServ()[1]);
+            try {
+                Thread.sleep(10000); // Sleep for 10 seconds so we get some kickTime for the identify to pass trough.
+            }
+            catch(InterruptedException err) {
+                LOGGER.log(Level.WARNING, err.getMessage(), err);
+            }
             this.joinChannel(config.loadBotSettings()[1]);
 
             LOGGER.info("Connected");
