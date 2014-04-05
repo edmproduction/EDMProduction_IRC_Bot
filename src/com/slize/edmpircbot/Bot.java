@@ -6,6 +6,7 @@ import org.jibble.pircbot.*;
 import java.util.ArrayList;
 import java.util.logging.*;
 
+
 public class Bot extends PircBot {
     private final static Logger LOGGER = Logger.getLogger(Bot.class.getName());
 
@@ -61,6 +62,7 @@ public class Bot extends PircBot {
         }
 
         try {
+            // @help [command]
             if(messageSplit[0].equalsIgnoreCase("@help")) {
                 try {
                     if(messageSplit[1].equalsIgnoreCase("print") && user.isOp()) {
@@ -104,6 +106,7 @@ public class Bot extends PircBot {
                     sendMessage(channel, "Available commands are: " + commands + ". Do @help <command> for more help.");
                 }
             }
+            // @kick <nick> <channel> [reason]
             else if(messageSplit[0].equalsIgnoreCase("@kick") && user.isOp()) {
                 try {
                     String kickMessage = "";
@@ -126,6 +129,7 @@ public class Bot extends PircBot {
                 }
 
             }
+            // @ban <nick> <channel> [reason]
             else if(messageSplit[0].equalsIgnoreCase("@ban") && user.isOp()) {
                 try {
                     String kickMessage = "";
@@ -148,6 +152,7 @@ public class Bot extends PircBot {
                     }
                 }
             }
+            // @print [subreddit]
             else if(messageSplit[0].equalsIgnoreCase("@print") && user.isOp()) {
                 try {
                     printNewSubmissions(channel, messageSplit[1]);
@@ -157,6 +162,7 @@ public class Bot extends PircBot {
                     printNewSubmissions(channel, config.loadBotSettings()[2].split(",")[0]);
                 }
             }
+            // @silent [subreddit] <on/off>
             else if(messageSplit[0].equalsIgnoreCase("@silent") && user.isOp()) {
                 try {
                     String[] subreddits = config.loadBotSettings()[2].split(",");
@@ -199,10 +205,11 @@ public class Bot extends PircBot {
                         }
                     }
                     catch(ArrayIndexOutOfBoundsException err2) {
-                        sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid syntax. @silent [channel] <on/off>");
+                        sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Invalid syntax. @silent [subreddit] <on/off>");
                     }
                 }
             }
+            // @log <mode>
             else if(messageSplit[0].equalsIgnoreCase("@log") && user.isOp()) {
                 try {
                     if(messageSplit[1].equalsIgnoreCase("info")) {
@@ -259,27 +266,23 @@ public class Bot extends PircBot {
     }
 
     protected void onDisconnect() {
-        int attempts = 0;
-
         LOGGER.info("Disconnected from server, trying to reconnect.");
 
-        while(!isConnected() && attempts < 20) {
+        while(!isConnected()) {
             try {
                 this.connect(host);
             }
             catch(Exception err) {
-                LOGGER.log(Level.WARNING, err.getMessage(), err);
+                LOGGER.log(Level.WARNING, "Error when trying to connect to server.", err);
             }
 
-            // Sleep for 5 seconds so we don't use all the attempts in one go.
+            // Sleep for 5 seconds so we don't spam the connection.
             try {
                 Thread.sleep(5000);
             }
             catch(InterruptedException err) {
                 LOGGER.log(Level.WARNING, err.getMessage(), err);
             }
-
-            attempts++;
         }
 
         if(this.isConnected()) {
@@ -299,18 +302,14 @@ public class Bot extends PircBot {
         boolean submissionExists;
         int lastSubmissionIndex = 0;
 
-        LOGGER.finer("Printing new submissions.");
+        LOGGER.finest("Printing new submissions.");
 
+        // Get new submissions from "subreddit".
         try {
             submissions = reddit.getNewPosts(subreddit);
         }
-        catch(NullPointerException err) {
-            LOGGER.log(Level.SEVERE, err.getMessage(), err);
-
-            return;
-        }
         catch(Exception err) {
-            LOGGER.log(Level.SEVERE, err.getMessage(), err);
+            LOGGER.log(Level.SEVERE, "Could not get new posts.", err);
             sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Could not get new posts.");
 
             return;
@@ -334,7 +333,7 @@ public class Bot extends PircBot {
             }
         }
         catch(Exception err) {
-            LOGGER.log(Level.SEVERE, err.getMessage(), err);
+            LOGGER.log(Level.SEVERE, "Could not figure out what lastSubmission array to use when fetching new submissions.", err);
             sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL +
                         "Could not figure out what lastSubmission array to use when fetching new submissions.");
 
@@ -343,46 +342,39 @@ public class Bot extends PircBot {
 
         // Check if there are any new submissions, and if there are, print them.
         for(Submission submission : submissions) {
-            try {
-                submissionExists = false;
+            submissionExists = false;
 
-
-                for(int i = lastSubmissions.length - 1; i >= 0; i--) {
-                    try {
-                        if (submission.getURL().equals(lastSubmissions[i].getURL())) {
-                            submissionExists = true;
-                        }
-                    }
-                    catch(NullPointerException err) {
-                        // Ignore posts that return null. loop will encounter a null if the subreddit has
-                        // less than 25 posts.
+            for(int i = lastSubmissions.length - 1; i >= 0; i--) {
+                try {
+                    if (submission.getURL().equals(lastSubmissions[i].getURL())) {
+                        submissionExists = true;
                     }
                 }
-
-                if (!submissionExists) {
-                    try {
-                        sendMessage(channel, Colors.PURPLE + "New Submission: " + Colors.NORMAL +
-                                submission.getTitle() + " (" + "http://reddit.com" +
-                                submission.getURL() + ")");
-                    } catch (Exception err) {
-                        LOGGER.log(Level.WARNING, err.getMessage(), err);
-                        sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Could not get post title and/or author.");
-                    }
-                }
-                else {
-                    // When there are no more new submissions, we replace the old submission array with the current one.
-                    this.lastSubmissions.set(lastSubmissionIndex, submissions);
-                    LOGGER.finest("Replacing submissions.");
-
-                    return;
+                catch(NullPointerException err) {
+                    // Ignore posts that return null. The loop will encounter a null if the subreddit has
+                    // less than 25 posts.
                 }
             }
-            // The program will always get a NullPointerException when first booting up.
-            // We fix this by catching the exception and putting the last submission to i + 1.
-            catch (Exception err) {
-                LOGGER.log(Level.WARNING, err.getMessage(), err);
-                sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Could not get new posts.");
+
+            // If the submission does not exist, then print it to "channel".
+            if(!submissionExists) {
+                try {
+                    sendMessage(channel, Colors.PURPLE + "New Submission: " + Colors.NORMAL +
+                            submission.getTitle() + " (" + "http://reddit.com" +
+                            submission.getURL() + ")");
+                } catch (Exception err) {
+                    LOGGER.log(Level.WARNING, "Could not get post title and/or author.", err);
+                    sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL + "Could not get post title and/or author.");
+                }
             }
+            else {
+                // When there are no more new submissions, we replace the old submission array with the current one.
+                this.lastSubmissions.set(lastSubmissionIndex, submissions);
+                LOGGER.finest("Replacing submissions.");
+
+                return;
+            }
+
         }
     }
 
