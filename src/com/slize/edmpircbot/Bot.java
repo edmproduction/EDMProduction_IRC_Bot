@@ -452,8 +452,6 @@ public class Bot extends PircBot {
         }
         catch(Exception err) {
             LOGGER.log(Level.SEVERE, "Could not figure out what lastSubmission array to use when fetching new submissions.", err);
-            sendMessage(channel, Colors.RED + "Error: " + Colors.NORMAL +
-                        "Could not figure out what lastSubmission array to use when fetching new submissions.");
 
             return;
         }
