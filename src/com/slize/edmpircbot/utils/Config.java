@@ -1,25 +1,10 @@
-package com.slize.edmpircbot;
+package com.slize.edmpircbot.utils;
 
 import java.util.Properties;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-
 public class Config {
-    private static final Logger LOGGER = Logger.getLogger(Config.class.getName());
-
     private Properties config;
 
     public Config(String fileName) throws Exception {
-        try {
-            FileHandler fh;
-            fh = new FileHandler("config.log");
-            LOGGER.addHandler(fh);
-            fh.setFormatter(new SimpleFormatter());
-        }
-        catch(Exception err) {
-            err.printStackTrace();
-        }
 
         config = new Properties();
 
@@ -35,11 +20,11 @@ public class Config {
     }
 
     public String[] loadBotSettings() {
-        String[] bot = new String[3];
+        String[] bot = new String[2];
 
         bot[0] = config.getProperty("bot.nick");
         bot[1] = config.getProperty("bot.chan");
-        bot[2] = config.getProperty("bot.subreddit");
+
 
         return bot;
     }
@@ -54,22 +39,25 @@ public class Config {
     }
 
     public String[] loadReddit() {
-        String[] reddit = new String[2];
+        String[] reddit = new String[3];
 
         reddit[0] = config.getProperty("reddit.user");
         reddit[1] = config.getProperty("reddit.pass");
+        reddit[2] = config.getProperty("reddit.subreddit");
 
         return reddit;
     }
 
-    public String[] loadSpamSettings() {
-        String[] spam = new String[5];
+    public int[] loadSpamSettings() {
+        int[] spam = new int[7];
 
-        spam[0] = config.getProperty("spam.time");
-        spam[1] = config.getProperty("spam.lines");
-        spam[2] = config.getProperty("spam.bantime.1");
-        spam[3] = config.getProperty("spam.bantime.2");
-        spam[4] = config.getProperty("spam.bantime.3");
+        spam[0] = Integer.parseInt(config.getProperty("spam.time"));
+        spam[1] = Integer.parseInt(config.getProperty("spam.lines"));
+        spam[2] = Integer.parseInt(config.getProperty("spam.resettime"));
+        spam[3] = Integer.parseInt(config.getProperty("spam.bantime.1"));
+        spam[4] = Integer.parseInt(config.getProperty("spam.bantime.2"));
+        spam[5] = Integer.parseInt(config.getProperty("spam.bantime.3"));
+        spam[6] = Integer.parseInt(config.getProperty("spam.bantime.4", "-1"));
 
         return spam;
     }
