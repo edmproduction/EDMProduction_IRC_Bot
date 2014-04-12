@@ -48,6 +48,8 @@ public class Main {
                 .addListener(new SetCommand())
                 .addListener(new SilentCommand(config))
                 .addListener(new LogCommand())
+                .addListener(new FrequencyCommand())
+                .addListener(new NoteCommand())
 
                 .buildConfiguration();
         PircBotX bot = new PircBotX(configuration);
