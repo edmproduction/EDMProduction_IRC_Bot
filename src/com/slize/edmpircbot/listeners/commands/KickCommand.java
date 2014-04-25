@@ -21,7 +21,7 @@ public class KickCommand extends ListenerAdapter implements Command {
 
         String[] message = event.getMessage().split(" ");
 
-        if(message.length < 5 && message.length > 2) {
+        if(message.length > 2) {
             // Get channel and user.
             Channel channel = ListenerUtils.getChannel(message[1], event.getBot().getUserChannelDao().getAllChannels());
 
@@ -39,7 +39,7 @@ public class KickCommand extends ListenerAdapter implements Command {
             }
 
             // Kick user.
-            if(message.length == 4) {
+            if(message.length > 3) {
                 String kickMessage = "";
 
                 for(int i = 3; i < message.length; i++) {

@@ -6,7 +6,6 @@ import org.pircbotx.Colors;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -53,7 +52,9 @@ public class FrequencyCommand extends ListenerAdapter implements Command {
         int i = 0;
 
         try {
-            file = new Scanner(new File("res/note_and_frequencies.txt"));
+            ClassLoader loader = getClass().getClassLoader();
+
+            file = new Scanner(loader.getResourceAsStream("note_and_frequencies.txt"));
         }
         catch(Exception err) {
             log.error("Could not load note and frequency file.", err);

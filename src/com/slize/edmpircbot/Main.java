@@ -50,6 +50,7 @@ public class Main {
                 .addListener(new LogCommand())
                 .addListener(new FrequencyCommand())
                 .addListener(new NoteCommand())
+                .addListener(new GetCommand())
 
                 .buildConfiguration();
         PircBotX bot = new PircBotX(configuration);

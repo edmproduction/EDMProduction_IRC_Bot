@@ -143,7 +143,15 @@ public class AntiSpam extends ListenerAdapter {
         spamTime = newValue;
     }
 
+    public static int getSpamTime() {
+        return spamTime;
+    }
+
     public static void setSpamLines(int newValue) {
         spamLines = newValue;
+    }
+
+    public static int getSpamLines() {
+        return spamLines;
     }
 }
