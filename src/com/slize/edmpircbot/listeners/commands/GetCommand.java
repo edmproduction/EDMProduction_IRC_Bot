@@ -9,7 +9,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 public class GetCommand extends ListenerAdapter implements Command {
 
     @Override
-    public void onMessage(MessageEvent event) throws Exception {
+    public void onMessage(MessageEvent event) {
         if(!ListenerUtils.isCommand(event.getMessage(), "get")) {
             return;
         }
