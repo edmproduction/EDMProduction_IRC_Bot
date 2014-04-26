@@ -51,6 +51,7 @@ public class Main {
                 .addListener(new FrequencyCommand())
                 .addListener(new NoteCommand())
                 .addListener(new GetCommand())
+                .addListener(new ScaleCommand())
 
                 .buildConfiguration();
         PircBotX bot = new PircBotX(configuration);
