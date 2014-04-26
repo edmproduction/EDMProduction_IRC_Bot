@@ -10,7 +10,7 @@ public class GetCommand extends ListenerAdapter implements Command {
 
     @Override
     public void onMessage(MessageEvent event) {
-        if(!ListenerUtils.isCommand(event.getMessage(), "get")) {
+        if(!ListenerUtils.isCommand(event.getMessage(), "get") || !ListenerUtils.isOp(event.getChannel(), event.getUser())) {
             return;
         }
 
