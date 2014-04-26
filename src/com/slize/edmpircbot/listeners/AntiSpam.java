@@ -3,6 +3,8 @@ package com.slize.edmpircbot.listeners;
 import com.slize.edmpircbot.utils.Config;
 import com.slize.edmpircbot.utils.ListenerUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.pircbotx.Channel;
+import org.pircbotx.User;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.RemoveChannelBanEvent;
@@ -18,6 +20,32 @@ public class AntiSpam extends ListenerAdapter {
     private static int spamLines;
     private int[] banTime;
     private static int resetTime;
+
+    private class SpamUser {
+        public User user;
+        public Channel channel;
+        public int lines;
+        public int kickTime;
+        public int banTime;
+        public int lastKickTime;
+        public int timesBanned;
+        public int timesKicked;
+        public boolean isBanned;
+
+
+        public SpamUser(User user, Channel channel) {
+            this.user = user;
+            this.channel = channel;
+            this.lines = 1;
+            this.kickTime = (int) System.currentTimeMillis();
+            this.banTime = (int) System.currentTimeMillis();
+            this.lastKickTime = (int) System.currentTimeMillis();
+            this.timesKicked = 0;
+            this.timesBanned = 0;
+            this.isBanned = false;
+        }
+    }
+
 
     public AntiSpam(Config config) {
         this.banTime = new int[4];
