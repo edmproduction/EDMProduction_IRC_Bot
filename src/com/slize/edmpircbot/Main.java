@@ -9,21 +9,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 
+import java.util.Arrays;
+
 @Slf4j
 public class Main {
 
     public static void main(String[] args) throws Exception {
         Config config;
 
-        // If the user does not supply a config, then give the them a warning and end the program.
-        try {
-            config = new Config(args[0]);
-        }
-        catch(ArrayIndexOutOfBoundsException err) {
-            System.err.println("A config is needed.\n" + "java -jar <jarName> <config>");
-            config = null;
+        // Handle command line arguments
+        if(Arrays.asList(args).contains("-c")) {
+            if(Arrays.asList(args).indexOf("-c") + 1 < args.length) {
+                config = new Config(args[Arrays.asList(args).indexOf("-c") + 1]);
+            }
+            else {
+                System.out.println("-c requires a file.");
 
-            System.exit(1);
+                config = null;
+                System.exit(1);
+            }
+        }
+        else {
+            config = new Config("./config.cfg");
         }
 
         String[] botCfg = config.loadBotSettings();

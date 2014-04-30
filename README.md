@@ -24,7 +24,7 @@ The program requires a config, formatted like this:
     spam.bantime.3=<Milliseconds>
     spam.bantime.4=<Milliseconds> (Defaults to -1 if nothing is supplied (permanent ban))
 
-Place this config in, for example, /res/, then run by typing `java -jar <jarname> <config>`
+Place this config in the same folder as the compiled jar. If you call the config something else than `config.cfg`, then the program by typing `java -jar <jarname> -c <config>`
 
 
 

@@ -1,22 +1,15 @@
 package com.slize.edmpircbot.utils;
 
+import java.io.FileInputStream;
 import java.util.Properties;
+
 public class Config {
     private Properties config;
 
     public Config(String fileName) throws Exception {
-
         config = new Properties();
 
-        try {
-            ClassLoader loader = getClass().getClassLoader();
-
-            config.load(loader.getResourceAsStream(fileName));
-        }
-        catch(Exception err) {
-            System.err.println("Critical Error: Could not load config file.");
-            err.printStackTrace();
-        }
+        config.load(new FileInputStream(fileName));
     }
 
     public String[] loadBotSettings() {
