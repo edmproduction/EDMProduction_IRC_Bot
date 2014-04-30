@@ -23,8 +23,6 @@ public class UrlTitlePoster extends ListenerAdapter {
 
                 try {
                     documentContent = readUrlContent(messagePart);
-
-                    log.debug(documentContent);
                 }
                 catch(MalformedURLException err) {
                     log.debug("Malformed URL.", err);
@@ -47,14 +45,17 @@ public class UrlTitlePoster extends ListenerAdapter {
     }
 
     public static String getTitle(String content) {
-        String startTag = "<title>";
+        String startTag = "<title";
         String endTag = "</title>";
 
-        int titleStart = content.indexOf(startTag) + startTag.length();
+        int titleStart = content.indexOf(startTag);
+        int titleStartEnd = content.indexOf(">", titleStart);
         int titleEnd = content.indexOf(endTag);
 
+        log.debug((titleStart + titleStartEnd - titleStart) + " " + titleEnd);
+
         if(titleStart != -1 && titleEnd != -1) {
-            return content.substring(titleStart, titleEnd);
+            return content.substring(titleStart + (titleStartEnd - titleStart) + 1, titleEnd);
         }
         else {
             return null;
