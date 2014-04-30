@@ -3,6 +3,7 @@ package com.slize.edmpircbot;
 import com.slize.edmpircbot.listeners.AntiSpam;
 import com.slize.edmpircbot.listeners.Connection;
 import com.slize.edmpircbot.listeners.PrintNewPosts;
+import com.slize.edmpircbot.listeners.UrlTitlePoster;
 import com.slize.edmpircbot.listeners.commands.*;
 import com.slize.edmpircbot.utils.Config;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,7 @@ public class Main {
                 .addListener(new Connection(config))
                 .addListener(new AntiSpam(config))
                 .addListener(new PrintNewPosts(config))
+                .addListener(new UrlTitlePoster())
                 // Commands
                 .addListener(new HelpCommand())
                 .addListener(new KickCommand())
