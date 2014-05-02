@@ -1,11 +1,27 @@
 package com.slize.edmpircbot.listeners.commands;
 
 import com.slize.edmpircbot.utils.ListenerUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.pircbotx.Colors;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
+import java.util.ArrayList;
+import java.util.Scanner;
+
+@Slf4j
 public class NoteCommand extends ListenerAdapter implements Command {
+    private static ArrayList<NotesAndFrequencies> notesAndFrequenciesList = new ArrayList<NotesAndFrequencies>();
+
+    protected class NotesAndFrequencies {
+        public String note;
+        public float frequency;
+        public float wavelength;
+    }
+
+    public NoteCommand() {
+        loadNotesAndFrequencies();
+    }
 
     public void onMessage(MessageEvent event) throws Exception {
         if(!ListenerUtils.isCommand(event.getMessage(), "note")) {
@@ -15,106 +31,53 @@ public class NoteCommand extends ListenerAdapter implements Command {
         String[] message = event.getMessage().split(" ");
 
         if(message.length == 2) {
-            // Easter Egg
-            if(message[1].equalsIgnoreCase("brown")) {
-                event.respond("If I were to share the frequency of the brown note with you, then you would probably use it for evil purposes.");
+            for(NotesAndFrequencies notesAndFrequencies : notesAndFrequenciesList) {
+                if(notesAndFrequencies.note.equalsIgnoreCase(message[1])) {
+                    event.respond("The frequency for " + notesAndFrequencies.note + " is " + notesAndFrequencies.frequency + " Hz");
 
-                return;
-            }
-
-            try {
-                for(FrequencyCommand.NotesAndFrequencies notesAndFrequencies : FrequencyCommand.getNotesAndFrequenciesList()) {
-                    if(notesAndFrequencies.frequency < 50 &&
-                            isCloseTo(notesAndFrequencies.frequency, Float.parseFloat(message[1]), 1.0f)) {
-                        event.respond("The closest note to " + message[1] + " Hz is " +
-                                notesAndFrequencies.note + " (" + notesAndFrequencies.frequency + " Hz)");
-
-                        return;
-                    }
-                    else if(notesAndFrequencies.frequency < 100 && notesAndFrequencies.frequency > 50 &&
-                            isCloseTo(notesAndFrequencies.frequency, Float.parseFloat(message[1]), 4.0f)) {
-                        event.respond("The closest note to " + message[1] + " Hz is " +
-                                notesAndFrequencies.note + " (" + notesAndFrequencies.frequency + " Hz)");
-
-                        return;
-                    }
-                    else if(notesAndFrequencies.frequency < 200 && notesAndFrequencies.frequency > 100 &&
-                            isCloseTo(notesAndFrequencies.frequency, Float.parseFloat(message[1]), 7.0f)) {
-                        event.respond("The closest note to " + message[1] + " Hz is " +
-                                notesAndFrequencies.note + " (" + notesAndFrequencies.frequency + " Hz)");
-
-                        return;
-                    }
-                    else if(notesAndFrequencies.frequency < 300 && notesAndFrequencies.frequency > 200 &&
-                            isCloseTo(notesAndFrequencies.frequency, Float.parseFloat(message[1]), 12.0f)) {
-                        event.respond("The closest note to " + message[1] + " Hz is " +
-                                notesAndFrequencies.note + " (" + notesAndFrequencies.frequency + " Hz)");
-
-                        return;
-                    }
-                    else if(notesAndFrequencies.frequency < 1000 && notesAndFrequencies.frequency > 300 &&
-                            isCloseTo(notesAndFrequencies.frequency, Float.parseFloat(message[1]), 17.5f)) {
-                        event.respond("The closest note to " + message[1] + " Hz is " +
-                                notesAndFrequencies.note + " (" + notesAndFrequencies.frequency + " Hz)");
-
-                        return;
-                    }
-                    else if(notesAndFrequencies.frequency < 2000 && notesAndFrequencies.frequency > 1000 &&
-                            isCloseTo(notesAndFrequencies.frequency, Float.parseFloat(message[1]), 50.0f)) {
-                        event.respond("The closest note to " + message[1] + " Hz is " +
-                                notesAndFrequencies.note + " (" + notesAndFrequencies.frequency + " Hz)");
-
-                        return;
-                    }
-                    else if(notesAndFrequencies.frequency < 3000 && notesAndFrequencies.frequency > 2000 &&
-                            isCloseTo(notesAndFrequencies.frequency, Float.parseFloat(message[1]), 100.0f)) {
-                        event.respond("The closest note to " + message[1] + " Hz is " +
-                                notesAndFrequencies.note + " (" + notesAndFrequencies.frequency + " Hz)");
-
-                        return;
-                    }
-                    else if(notesAndFrequencies.frequency < 4000 && notesAndFrequencies.frequency > 3000 &&
-                            isCloseTo(notesAndFrequencies.frequency, Float.parseFloat(message[1]), 170.0f)) {
-                        event.respond("The closest note to " + message[1] + " Hz is " +
-                                notesAndFrequencies.note + " (" + notesAndFrequencies.frequency + " Hz)");
-
-                        return;
-                    }
-                    else if(notesAndFrequencies.frequency < 5000 && notesAndFrequencies.frequency > 4000 &&
-                            isCloseTo(notesAndFrequencies.frequency, Float.parseFloat(message[1]), 245.0f)) {
-                        event.respond("The closest note to " + message[1] + " Hz is " +
-                                notesAndFrequencies.note + " (" + notesAndFrequencies.frequency + " Hz)");
-
-                        return;
-                    }
-                    else if(notesAndFrequencies.frequency > 5000 &&
-                            isCloseTo(notesAndFrequencies.frequency, Float.parseFloat(message[1]), 310.0f)) {
-                        event.respond("The closest note to " + message[1] + " Hz is " +
-                                notesAndFrequencies.note + " (" + notesAndFrequencies.frequency + " Hz)");
-
-                        return;
-                    }
+                    return;
                 }
             }
-            catch(NumberFormatException err) {
-                System.out.println("NumberFormatException");
-                // This catch is ignored.
-            }
 
-            // If the note is not found (or he/she inputs something that is not a number), tell the user.
-            event.respond("I could not find that frequency.");
+            // If the note is not found, tell the user.
+            event.respond("I could not find that note.");
         }
         else {
             event.respond(Colors.RED + "Error: " + Colors.NORMAL + "Invalid Syntax.");
         }
     }
 
-    private boolean isCloseTo(float frequency, float message, float difference) {
-        return frequency <= message + difference && frequency >= message - difference;
+    private void loadNotesAndFrequencies() {
+        Scanner file;
+        int i = 0;
+
+        try {
+            ClassLoader loader = getClass().getClassLoader();
+
+            file = new Scanner(loader.getResourceAsStream("note_and_frequencies.txt"));
+        }
+        catch(Exception err) {
+            log.error("Could not load note and frequency file.", err);
+            return;
+        }
+
+        while(file.hasNextLine()) {
+            // The file is structured with notes first, then frequency, then wavelength.
+            notesAndFrequenciesList.add(new NotesAndFrequencies());
+            notesAndFrequenciesList.get(i).note = file.next();
+            notesAndFrequenciesList.get(i).frequency = Float.parseFloat(file.next());
+            notesAndFrequenciesList.get(i).wavelength = Float.parseFloat(file.next());
+
+            i++;
+        }
+    }
+
+    public static ArrayList<NotesAndFrequencies> getNotesAndFrequenciesList() {
+        return notesAndFrequenciesList;
     }
 
     public String getHelp() {
-        return "Shows the corresponding note for <frequency>. Syntax: " + ListenerUtils.PREFIX + "note <frequency>";
+        return "Shows the corresponding frequency for <note>. Notes should be supplied with numbers (for example, C5 or F#5). Syntax: " + ListenerUtils.PREFIX + "note <note>";
     }
 
     public boolean isOpOnlyCommand() {

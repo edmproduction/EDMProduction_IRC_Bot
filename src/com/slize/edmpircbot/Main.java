@@ -56,8 +56,8 @@ public class Main {
                 .addListener(new SetCommand())
                 .addListener(new SilentCommand(config))
                 .addListener(new LogCommand())
-                .addListener(new FrequencyCommand())
                 .addListener(new NoteCommand())
+                .addListener(new FrequencyCommand())
                 .addListener(new GetCommand())
                 .addListener(new ScaleCommand())
 
