@@ -1,9 +1,6 @@
 package com.slize.edmpircbot;
 
-import com.slize.edmpircbot.listeners.AntiSpam;
-import com.slize.edmpircbot.listeners.Connection;
-import com.slize.edmpircbot.listeners.PrintNewPosts;
-import com.slize.edmpircbot.listeners.UrlTitlePoster;
+import com.slize.edmpircbot.listeners.*;
 import com.slize.edmpircbot.listeners.commands.*;
 import com.slize.edmpircbot.utils.Config;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +36,7 @@ public class Main {
         Configuration configuration = new Configuration.Builder()
                 .setServerHostname("irc.freenode.org")
                 .setName(botCfg[0])
+                .setRealName("Moderator bot for #edmproduction")
                 .setLogin(botCfg[0])
                 .setAutoNickChange(true)
                 .setAutoReconnect(true)
@@ -49,6 +47,7 @@ public class Main {
                 .addListener(new AntiSpam(config))
                 .addListener(new PrintNewPosts(config))
                 .addListener(new UrlTitlePoster())
+                .addListener(new Response())
                 // Commands
                 .addListener(new HelpCommand())
                 .addListener(new KickCommand())
