@@ -61,8 +61,7 @@ public class PrintNewPosts extends ListenerAdapter {
             submissions = reddit.getNewPosts(subreddit);
         }
         catch(Exception err) {
-            log.warn("Could not get new posts.", err);
-            channel.send().message(Colors.RED + "Error: " + Colors.NORMAL + "Could not get new posts.");
+            log.error("Could not get new posts.", err);
 
             return;
         }
@@ -114,8 +113,7 @@ public class PrintNewPosts extends ListenerAdapter {
                             submission.getTitle() + " (" + "http://reddit.com" +
                             submission.getURL() + ")");
                 } catch (Exception err) {
-                    log.warn("Could not get post title and/or url.", err);
-                    channel.send().message(Colors.RED + "Error: " + Colors.NORMAL + "Could not get post title and/or url.");
+                    log.error("Could not get post title and/or url.", err);
                 }
             }
             else {
