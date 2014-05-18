@@ -48,6 +48,8 @@ public class Main {
                 .addListener(new PrintNewPosts(config))
                 .addListener(new UrlTitlePoster())
                 .addListener(new Response())
+                .addListener(new RejoinChannel())
+
                 // Commands
                 .addListener(new HelpCommand())
                 .addListener(new KickCommand())
