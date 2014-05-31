@@ -55,7 +55,7 @@ public class UrlTitlePoster extends ListenerAdapter {
         log.debug((titleStart + titleStartEnd - titleStart) + " " + titleEnd);
 
         if(titleStart != -1 && titleEnd != -1) {
-            return content.substring(titleStart + (titleStartEnd - titleStart) + 1, titleEnd);
+            return content.substring(titleStart + (titleStartEnd - titleStart) + 1, titleEnd).trim();
         }
         else {
             return null;
