@@ -55,6 +55,7 @@ public class Main {
                 .addListener(new KickCommand())
                 .addListener(new BanCommand())
                 .addListener(new NoticeCommand())
+                .addListener(new SayCommand())
                 .addListener(new PrintCommand())
                 .addListener(new SetCommand())
                 .addListener(new SilentCommand(config))
