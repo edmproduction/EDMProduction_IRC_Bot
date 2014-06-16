@@ -30,7 +30,7 @@ public class Connection extends ListenerAdapter {
         event.getBot().sendIRC().message("NickServ", "IDENTIFY " + nickServUsername + " " + nickServPassword);
 
         try {
-            Thread.sleep(5000); // Sleep for 5 seconds so we get some time for the identify to pass trough.
+            Thread.sleep(10000); // Sleep for 10 seconds so we get some time for the identify to pass trough.
         }
         catch(InterruptedException err) {
             log.warn(err.getMessage(), err);
@@ -44,7 +44,7 @@ public class Connection extends ListenerAdapter {
             event.getBot().sendIRC().message("NickServ", "GHOST " + preferedNick);
 
             try {
-                Thread.sleep(5000); // Sleep for 5 seconds so we get some time for the ghost to pass trough.
+                Thread.sleep(10000); // Sleep for 10 seconds so we get some time for the ghost to pass trough.
             }
             catch(InterruptedException err) {
                 log.warn(err.getMessage(), err);
