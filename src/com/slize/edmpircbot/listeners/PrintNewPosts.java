@@ -109,9 +109,8 @@ public class PrintNewPosts extends ListenerAdapter {
             // If the submission does not exist, then print it to "channel".
             if(!submissionExists) {
                 try {
-                    channel.send().message(Colors.PURPLE + "New Submission: " + Colors.NORMAL +
-                            submission.getTitle() + " (" + "http://reddit.com" +
-                            submission.getURL() + ")");
+                    channel.send().message(Colors.PURPLE + "New Submission: " + Colors.NORMAL + submission.getTitle() +
+                            " (" + "http://redd.it/" + submission.getFullName().substring(3) + ")");
                 } catch (Exception err) {
                     log.error("Could not get post title and/or url.", err);
                 }
