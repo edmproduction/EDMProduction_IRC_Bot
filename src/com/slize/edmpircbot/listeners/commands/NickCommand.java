@@ -8,7 +8,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 public class NickCommand extends ListenerAdapter implements Command {
 
     public void onMessage(MessageEvent event) throws Exception {
-        if(!ListenerUtils.isCommand(event.getMessage(), "nick") && !ListenerUtils.isOp(event.getChannel(), event.getUser())) {
+        if(!ListenerUtils.isCommand(event.getMessage(), "nick") || !ListenerUtils.isOp(event.getChannel(), event.getUser())) {
             return;
         }
 
