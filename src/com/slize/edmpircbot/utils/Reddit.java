@@ -33,7 +33,7 @@ public class Reddit {
         Submissions tempSubms = new Submissions(restClient, user);
         int i = 0;
 
-        for(Submission submission : tempSubms.ofSubreddit(subreddit, SubmissionSort.NEW, 0, 24, null, null, true)) {
+        for(Submission submission : tempSubms.ofSubreddit(subreddit, SubmissionSort.NEW, 0, 25, null, null, true)) {
             submissions[i] = submission;
             i++;
         }

@@ -66,7 +66,7 @@ public class PrintNewPosts extends ListenerAdapter {
             return;
         }
 
-        // Find correct lastSubmissions list, if it does note exist then create a new list.
+        // Find correct lastSubmissions list, if it does not exist then create a new list.
         try {
             for(Submission[] s : this.lastSubmissions) {
                 if(s[0].getSubreddit().equals(submissions[0].getSubreddit())) {
