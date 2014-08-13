@@ -89,22 +89,6 @@ public class PrintNewPosts extends ListenerAdapter {
 
             return;
         }
-/*
-        for(Submission s : submissions) {
-            log.debug(s.getTitle());
-        }
-*/
-        log.debug("");
-        log.debug("");
-        log.debug("");
-
-        /*for(Submission s : lastSubmissions) {
-            log.debug(s.getTitle());
-        }*/
-
-        log.debug("");
-        log.debug("");
-        log.debug("");
 
         // Check if there are any new submissions, and if there are, print them.
         for(Submission submission : submissions) {
