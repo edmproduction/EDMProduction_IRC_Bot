@@ -97,7 +97,6 @@ public class PrintNewPosts extends ListenerAdapter {
             for(int i = lastSubmissions.length - 1; i >= 0; i--) {
                 try {
                     if (submission.getURL().equals(lastSubmissions[i].getURL())) {
-                    	//TODO: this is going to have null pointer exceptions if either array isn't full :(
                         submissionExists = true;
                     }
                 }

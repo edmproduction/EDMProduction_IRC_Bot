@@ -30,10 +30,10 @@ public class Reddit {
 
     public Submission[] getNewPosts(String subreddit) throws Exception {
         Submission[] submissions = new Submission[25];
-        Submissions tempSubms = new Submissions(restClient, user);
+        Submissions tempSubmissions = new Submissions(restClient, user);
         int i = 0;
 
-        for(Submission submission : tempSubms.ofSubreddit(subreddit, SubmissionSort.NEW, 0, 25, null, null, true)) {
+        for(Submission submission : tempSubmissions.ofSubreddit(subreddit, SubmissionSort.NEW, 0, 25, null, null, true)) {
             submissions[i] = submission;
             i++;
         }
