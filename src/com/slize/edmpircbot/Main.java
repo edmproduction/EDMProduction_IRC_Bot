@@ -14,7 +14,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         Config config;
-
+        
         // Handle command line arguments
         if(Arrays.asList(args).contains("-c")) {
             if(Arrays.asList(args).indexOf("-c") + 1 < args.length) {

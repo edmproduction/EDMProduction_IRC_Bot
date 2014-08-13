@@ -1,28 +1,25 @@
 package com.slize.edmpircbot.utils;
 
-import com.github.jreddit.submissions.Submission;
-import com.github.jreddit.submissions.Submissions;
-import com.github.jreddit.submissions.Submissions.Page;
-import com.github.jreddit.submissions.Submissions.Popularity;
-import com.github.jreddit.user.User;
-import com.github.jreddit.utils.Utils;
+import com.github.jreddit.retrieval.Submissions;
+import com.github.jreddit.entity.Submission;
+import com.github.jreddit.entity.User;
+import com.github.jreddit.retrieval.params.SubmissionSort;
+import com.github.jreddit.utils.restclient.HttpRestClient;
+import com.github.jreddit.utils.restclient.RestClient;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Reddit {
     private User user;
+    private RestClient restClient = new HttpRestClient();
 
     public Reddit() {
-
-        Utils.setUserAgent("EDMPModBot-0.1");
-
-        this.user = new User();
     }
 
     public Reddit(String username, String password) {
-        Utils.setUserAgent("EDMPModBot-0.1");
+        restClient.setUserAgent("EDMPModBot-0.1");
 
-        this.user = new User(username, password);
+        this.user = new User(restClient, username, password);
         try {
             this.user.connect();
         }
@@ -33,9 +30,10 @@ public class Reddit {
 
     public Submission[] getNewPosts(String subreddit) throws Exception {
         Submission[] submissions = new Submission[25];
+        Submissions tempSubms = new Submissions(restClient, user);
         int i = 0;
 
-        for(Submission submission : Submissions.getSubmissions(subreddit, Popularity.NEW, Page.FRONTPAGE, user)) {
+        for(Submission submission : tempSubms.ofSubreddit(subreddit, SubmissionSort.NEW, 0, 24, null, null, true)) {
             submissions[i] = submission;
             i++;
         }

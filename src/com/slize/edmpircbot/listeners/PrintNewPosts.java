@@ -1,6 +1,6 @@
 package com.slize.edmpircbot.listeners;
 
-import com.github.jreddit.submissions.Submission;
+import com.github.jreddit.entity.Submission;
 import com.slize.edmpircbot.utils.Config;
 import com.slize.edmpircbot.utils.Reddit;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +89,22 @@ public class PrintNewPosts extends ListenerAdapter {
 
             return;
         }
+
+        for(Submission s : submissions) {
+            log.debug(s.getTitle());
+        }
+
+        log.debug("");
+        log.debug("");
+        log.debug("");
+
+        for(Submission s : lastSubmissions) {
+            log.debug(s.getTitle());
+        }
+
+        log.debug("");
+        log.debug("");
+        log.debug("");
 
         // Check if there are any new submissions, and if there are, print them.
         for(Submission submission : submissions) {
